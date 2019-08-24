@@ -105,15 +105,8 @@ def main():
                          "Speed_Up_Merging_8h": format_minutes_to_time(speed_up_merging_8h * 480)
                          })
 
-    while True:
-        user_input = input("Do you want to open results.csv? (y/n):").lower()
-        if user_input == 'y' or user_input == "yes":
-            os.startfile("results.csv")
-            break
-        elif user_input == 'n' or user_input == "no":
-            break
-        else:
-            print("That didn't work. Please try again.")
+    os.startfile("results.csv")
+
     # Done!
 
 
