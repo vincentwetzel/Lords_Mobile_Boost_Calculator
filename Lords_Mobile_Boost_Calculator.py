@@ -14,6 +14,7 @@ def main():
     speed_up_60m = get_int_input("Enter the number of Speed Up (60 m) you have:")
     speed_up_3h = get_int_input("Enter the number of Speed Up (3 h) you have:")
     speed_up_8h = get_int_input("Enter the number of Speed Up (8 h) you have:")
+    speed_up_15h = get_int_input("Enter the number of Speed Up (15 h) you have:")
     speed_up_24h = get_int_input("Enter the number of Speed Up (24 h) you have:")
     sum_speed_ups = (speed_up_3m * 3) + (speed_up_5m * 5) + (speed_up_10m * 10) + (speed_up_15m * 15) + (
             speed_up_30m * 30) + (speed_up_60m * 60) + (speed_up_3h * 180) + (speed_up_8h * 480) + (
@@ -61,6 +62,7 @@ def main():
         "Speed_Up_60m",
         "Speed_Up_3h",
         "Speed_Up_8h",
+        "Speed_Up_15h",
         "Speed_Up_24h",
         "Speed_Up_Research_5m",
         "Speed_Up_Research_10m",
@@ -92,6 +94,7 @@ def main():
                          "Speed_Up_60m": format_minutes_to_time(speed_up_60m * 60),
                          "Speed_Up_3h": format_minutes_to_time(speed_up_3h * 180),
                          "Speed_Up_8h": format_minutes_to_time(speed_up_8h * 480),
+                         "Speed_Up_15h": format_minutes_to_time(speed_up_15h * 900),
                          "Speed_Up_24h": format_minutes_to_time(speed_up_24h * 1440),
                          "Speed_Up_Research_5m": format_minutes_to_time(speed_up_research_5m * 5),
                          "Speed_Up_Research_10m": format_minutes_to_time(speed_up_research_10m * 10),
