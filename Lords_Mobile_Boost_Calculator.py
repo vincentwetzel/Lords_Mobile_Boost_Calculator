@@ -1,11 +1,50 @@
 from datetime import datetime
-import csv
+import csv  # TODO: Remove this
 import os
+import pandas  # Also requires xlrd to read xlsx files.
 
 
 def main():
     print_section("Welcome to Vincent's Speed Up Calculator for Lord's Mobile!", '*')
 
+    """
+    df = pandas.read_excel("results.xlsx")
+    print(df)
+
+    writer = pandas.ExcelWriter("results.xlsx", mode='a')
+    df = pandas.DataFrame({"Date/Time": "1",
+                         "Notes": "1",
+                         "Speed_Up_Total": "1",
+                         "Speed_Up_Research_Total": "1",
+                         "Speed_Up_Merging_Total": "1",
+                         "Speed_Up_3m": "1",
+                         "Speed_Up_5m": "1",
+                         "Speed_Up_10m": "1",
+                         "Speed_Up_15m": "1",
+                         "Speed_Up_30m": "1",
+                         "Speed_Up_60m": "1",
+                         "Speed_Up_3h": "1",
+                         "Speed_Up_8h": "1",
+                         "Speed_Up_15h": "1",
+                         "Speed_Up_24h": "1",
+                         "Speed_Up_3d": "1",
+                         "Speed_Up_Research_5m": "1",
+                         "Speed_Up_Research_10m": "1",
+                         "Speed_Up_Research_15m": "1",
+                         "Speed_Up_Research_30m": "1",
+                         "Speed_Up_Research_60m": "1",
+                         "Speed_Up_Research_3h": "1",
+                         "Speed_Up_Research_8h": "1",
+                         "Speed_Up_Research_15h": "1",
+                         "Speed_Up_Research_24h": "1",
+                         "Speed_Up_Merging_15m": "1",
+                         "Speed_Up_Merging_60m": "1",
+                         "Speed_Up_Merging_3h": "1",
+                         "Speed_Up_Merging_8h": "1"
+                         })
+    writer.write_cells(df)
+    """
+    
     speed_up_3m = get_int_input("\nEnter the number of Speed Up (3 m) you have:")
     speed_up_5m = get_int_input("Enter the number of Speed Up (5 m) you have:")
     speed_up_10m = get_int_input("Enter the number of Speed Up (10 m) you have:")
@@ -16,9 +55,10 @@ def main():
     speed_up_8h = get_int_input("Enter the number of Speed Up (8 h) you have:")
     speed_up_15h = get_int_input("Enter the number of Speed Up (15 h) you have:")
     speed_up_24h = get_int_input("Enter the number of Speed Up (24 h) you have:")
+    speed_up_3d = get_int_input("Enter the number of Speed Up (3 d) you have:")
     sum_speed_ups = (speed_up_3m * 3) + (speed_up_5m * 5) + (speed_up_10m * 10) + (speed_up_15m * 15) + (
             speed_up_30m * 30) + (speed_up_60m * 60) + (speed_up_3h * 180) + (speed_up_8h * 480) + (
-                            speed_up_24h * 1440)
+                            speed_up_24h * 1440) + (speed_up_3d * 4320)
 
     speed_up_research_5m = get_int_input("\n\nEnter the number of Speed Up Research (5 m) you have:")
     speed_up_research_10m = get_int_input("Enter the number of Speed Up Research (10 m) you have:")
@@ -64,6 +104,7 @@ def main():
         "Speed_Up_8h",
         "Speed_Up_15h",
         "Speed_Up_24h",
+        "Speed_Up_3d",
         "Speed_Up_Research_5m",
         "Speed_Up_Research_10m",
         "Speed_Up_Research_15m",
@@ -96,6 +137,7 @@ def main():
                          "Speed_Up_8h": format_minutes_to_time(speed_up_8h * 480),
                          "Speed_Up_15h": format_minutes_to_time(speed_up_15h * 900),
                          "Speed_Up_24h": format_minutes_to_time(speed_up_24h * 1440),
+                         "Speed_Up_3d": format_minutes_to_time(speed_up_3d * 4320),
                          "Speed_Up_Research_5m": format_minutes_to_time(speed_up_research_5m * 5),
                          "Speed_Up_Research_10m": format_minutes_to_time(speed_up_research_10m * 10),
                          "Speed_Up_Research_15m": format_minutes_to_time(speed_up_research_15m * 15),
