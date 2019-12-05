@@ -1,49 +1,11 @@
 from datetime import datetime
-import csv  # TODO: Remove this
+import csv  # TODO: Remove this, make it XLSX
 import os
 import pandas  # Also requires xlrd to read xlsx files.
 
 
 def main():
     print_section("Welcome to Vincent's Speed Up Calculator for Lord's Mobile!", '*')
-
-    """
-    df = pandas.read_excel("results.xlsx")
-    print(df)
-
-    writer = pandas.ExcelWriter("results.xlsx", mode='a')
-    df = pandas.DataFrame({"Date/Time": "1",
-                         "Notes": "1",
-                         "Speed_Up_Total": "1",
-                         "Speed_Up_Research_Total": "1",
-                         "Speed_Up_Merging_Total": "1",
-                         "Speed_Up_3m": "1",
-                         "Speed_Up_5m": "1",
-                         "Speed_Up_10m": "1",
-                         "Speed_Up_15m": "1",
-                         "Speed_Up_30m": "1",
-                         "Speed_Up_60m": "1",
-                         "Speed_Up_3h": "1",
-                         "Speed_Up_8h": "1",
-                         "Speed_Up_15h": "1",
-                         "Speed_Up_24h": "1",
-                         "Speed_Up_3d": "1",
-                         "Speed_Up_Research_5m": "1",
-                         "Speed_Up_Research_10m": "1",
-                         "Speed_Up_Research_15m": "1",
-                         "Speed_Up_Research_30m": "1",
-                         "Speed_Up_Research_60m": "1",
-                         "Speed_Up_Research_3h": "1",
-                         "Speed_Up_Research_8h": "1",
-                         "Speed_Up_Research_15h": "1",
-                         "Speed_Up_Research_24h": "1",
-                         "Speed_Up_Merging_15m": "1",
-                         "Speed_Up_Merging_60m": "1",
-                         "Speed_Up_Merging_3h": "1",
-                         "Speed_Up_Merging_8h": "1"
-                         })
-    writer.write_cells(df)
-    """
     
     speed_up_3m = get_int_input("\nEnter the number of Speed Up (3 m) you have:")
     speed_up_5m = get_int_input("Enter the number of Speed Up (5 m) you have:")
@@ -77,8 +39,9 @@ def main():
     speed_up_merging_60m = get_int_input("Enter the number of Speed Up Merging(60 m) you have:")
     speed_up_merging_3h = get_int_input("Enter the number of Speed Up Merging (3 h) you have:")
     speed_up_merging_8h = get_int_input("Enter the number of Speed Up Merging (8 h) you have:")
+    speed_up_merging_15h = get_int_input("Enter the number of Speed Up Merging (15 h) you have:")
     sum_speed_up_merging = (speed_up_merging_15m * 15) + (speed_up_merging_60m * 60) + (speed_up_merging_3h * 180) + (
-            speed_up_merging_8h * 480)
+            speed_up_merging_8h * 480) + (speed_up_merging_15h * 900)
 
     print("\n\nTotal time from speed ups: " + format_minutes_to_time(sum_speed_ups))
     print("Total time from speed up research: " + format_minutes_to_time(sum_speed_up_research))
@@ -118,9 +81,10 @@ def main():
         "Speed_Up_Merging_60m",
         "Speed_Up_Merging_3h",
         "Speed_Up_Merging_8h",
+        "Speed_Up_Merging_15h"
     ]
 
-    with open("results.csv", 'a', newline='') as outfile:  # output csv file
+    with open("LM_boosts.csv", 'a', newline='') as outfile:  # output csv file
         writer = csv.DictWriter(outfile, fieldnames=fieldnames_for_csv)
         writer.writerow({"Date/Time": current_time,
                          "Notes": note,
@@ -150,10 +114,11 @@ def main():
                          "Speed_Up_Merging_15m": format_minutes_to_time(speed_up_merging_15m * 15),
                          "Speed_Up_Merging_60m": format_minutes_to_time(speed_up_merging_60m * 60),
                          "Speed_Up_Merging_3h": format_minutes_to_time(speed_up_merging_3h * 180),
-                         "Speed_Up_Merging_8h": format_minutes_to_time(speed_up_merging_8h * 480)
+                         "Speed_Up_Merging_8h": format_minutes_to_time(speed_up_merging_8h * 480),
+                         "Speed_Up_Merging_15h": format_minutes_to_time(speed_up_merging_15h * 900)
                          })
 
-    os.startfile("results.csv")
+    os.startfile("LM_boosts.csv")
 
     # Done!
 
