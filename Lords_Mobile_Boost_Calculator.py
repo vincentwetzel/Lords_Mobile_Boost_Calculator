@@ -1,9 +1,10 @@
-from tkinter import *
-from tkinter import ttk
+# from tkinter import *
+import tkinter
+import tkinter.ttk
+import tkinter.messagebox
 from datetime import datetime
 import csv
 import os
-import pandas  # Also requires xlrd to read xlsx files.
 
 speed_up_string_vars = [None] * 11
 """
@@ -54,9 +55,9 @@ data_set_notes_entry_string_var = None
 
 def main():
     # Init Tkinter GUI
-    root_tk = Tk()  # constructor for TK object
+    root_tk = tkinter.Tk()  # constructor for TK object
     root_tk.title("Lords Mobile Boost Calculator by Vincent Wetzel")
-    main_frame = ttk.Frame(root_tk, padding="3 3 12 12")
+    main_frame = tkinter.ttk.Frame(root_tk, padding="3 3 12 12")
     main_frame.grid(column=0, row=0, sticky=('N', 'W', 'E', 'S'))
     root_tk.columnconfigure(0, weight=1)
     root_tk.rowconfigure(0, weight=1)
@@ -64,174 +65,177 @@ def main():
     # Init globals
     global speed_up_string_vars
     for i in range(len(speed_up_string_vars)):
-        speed_up_string_vars[i] = StringVar(value=0)
+        speed_up_string_vars[i] = tkinter.StringVar(value=0)
 
     global speed_up_research_string_vars
     for i in range(len(speed_up_research_string_vars)):
-        speed_up_research_string_vars[i] = StringVar(value=0)
+        speed_up_research_string_vars[i] = tkinter.StringVar(value=0)
 
     global speed_up_merging_string_vars
     for i in range(len(speed_up_merging_string_vars)):
-        speed_up_merging_string_vars[i] = StringVar(value=0)
+        speed_up_merging_string_vars[i] = tkinter.StringVar(value=0)
 
     global results_string_vars
     for i in range(len(results_string_vars)):
-        results_string_vars[i] = StringVar(value="0 minutes")
+        results_string_vars[i] = tkinter.StringVar(value="0 minutes")
 
     global data_set_notes_entry_string_var
-    data_set_notes_entry_string_var = StringVar()
+    data_set_notes_entry_string_var = tkinter.StringVar()
 
     # Init Normal Speedups GUI
-    ttk.Label(main_frame, text="3 minute speedups").grid(column=0, row=0, sticky=W)
-    ttk.Label(main_frame, text="5 minute speedups").grid(column=0, row=1, sticky=W)
-    ttk.Label(main_frame, text="10 minute speedups").grid(column=0, row=2, sticky=W)
-    ttk.Label(main_frame, text="15 minute speedups").grid(column=0, row=3, sticky=W)
-    ttk.Label(main_frame, text="30 minute speedups").grid(column=0, row=4, sticky=W)
-    ttk.Label(main_frame, text="60 minute speedups").grid(column=0, row=5, sticky=W)
-    ttk.Label(main_frame, text="3 hour speedups").grid(column=0, row=6, sticky=W)
-    ttk.Label(main_frame, text="8 hour speedups").grid(column=0, row=7, sticky=W)
-    ttk.Label(main_frame, text="15 hour speedups").grid(column=0, row=8, sticky=W)
-    ttk.Label(main_frame, text="24 hour speedups").grid(column=0, row=9, sticky=W)
-    ttk.Label(main_frame, text="3 day speedups").grid(column=0, row=10, sticky=W)
-    speed_up_3m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[0])
+    tkinter.ttk.Label(main_frame, text="3 minute speedups").grid(column=0, row=0, sticky='W')
+    tkinter.ttk.Label(main_frame, text="5 minute speedups").grid(column=0, row=1, sticky='W')
+    tkinter.ttk.Label(main_frame, text="10 minute speedups").grid(column=0, row=2, sticky='W')
+    tkinter.ttk.Label(main_frame, text="15 minute speedups").grid(column=0, row=3, sticky='W')
+    tkinter.ttk.Label(main_frame, text="30 minute speedups").grid(column=0, row=4, sticky='W')
+    tkinter.ttk.Label(main_frame, text="60 minute speedups").grid(column=0, row=5, sticky='W')
+    tkinter.ttk.Label(main_frame, text="3 hour speedups").grid(column=0, row=6, sticky='W')
+    tkinter.ttk.Label(main_frame, text="8 hour speedups").grid(column=0, row=7, sticky='W')
+    tkinter.ttk.Label(main_frame, text="15 hour speedups").grid(column=0, row=8, sticky='W')
+    tkinter.ttk.Label(main_frame, text="24 hour speedups").grid(column=0, row=9, sticky='W')
+    tkinter.ttk.Label(main_frame, text="3 day speedups").grid(column=0, row=10, sticky='W')
+    speed_up_3m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[0])
     speed_up_3m_entry.grid(column=1, row=0)
     speed_up_3m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[0]))
     speed_up_3m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[0]))
-    speed_up_5m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[1])
+    speed_up_5m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[1])
     speed_up_5m_entry.grid(column=1, row=1)
     speed_up_5m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[1]))
     speed_up_5m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[1]))
-    speed_up_10m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[2])
+    speed_up_10m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[2])
     speed_up_10m_entry.grid(column=1, row=2)
     speed_up_10m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[2]))
     speed_up_10m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[2]))
-    speed_up_15m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[3])
+    speed_up_15m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[3])
     speed_up_15m_entry.grid(column=1, row=3)
     speed_up_15m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[3]))
     speed_up_15m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[3]))
-    speed_up_30m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[4])
+    speed_up_30m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[4])
     speed_up_30m_entry.grid(column=1, row=4)
     speed_up_30m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[4]))
     speed_up_30m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[4]))
-    speed_up_60m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[5])
+    speed_up_60m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[5])
     speed_up_60m_entry.grid(column=1, row=5)
     speed_up_60m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[5]))
     speed_up_60m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[5]))
-    speed_up_3h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[6])
+    speed_up_3h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[6])
     speed_up_3h_entry.grid(column=1, row=6)
     speed_up_3h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[6]))
     speed_up_3h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[6]))
-    speed_up_8h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[7])
+    speed_up_8h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[7])
     speed_up_8h_entry.grid(column=1, row=7)
     speed_up_8h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[7]))
     speed_up_8h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[7]))
-    speed_up_15h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[8])
+    speed_up_15h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[8])
     speed_up_15h_entry.grid(column=1, row=8)
     speed_up_15h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[8]))
     speed_up_15h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[8]))
-    speed_up_24h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[9])
+    speed_up_24h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[9])
     speed_up_24h_entry.grid(column=1, row=9)
     speed_up_24h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[9]))
     speed_up_24h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[9]))
-    speed_up_3d_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[10])
+    speed_up_3d_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_string_vars[10])
     speed_up_3d_entry.grid(column=1, row=10)
     speed_up_3d_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_string_vars[10]))
     speed_up_3d_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_string_vars[10]))
 
     # Init Research Speedups GUI
-    ttk.Label(main_frame, text="5 minute research").grid(column=2, row=0, sticky=W)
-    ttk.Label(main_frame, text="10 minute research").grid(column=2, row=1, sticky=W)
-    ttk.Label(main_frame, text="15 minute research").grid(column=2, row=2, sticky=W)
-    ttk.Label(main_frame, text="30 minute research").grid(column=2, row=3, sticky=W)
-    ttk.Label(main_frame, text="60 minute research").grid(column=2, row=4, sticky=W)
-    ttk.Label(main_frame, text="3 hour research").grid(column=2, row=5, sticky=W)
-    ttk.Label(main_frame, text="8 hour research").grid(column=2, row=6, sticky=W)
-    ttk.Label(main_frame, text="15 hour research").grid(column=2, row=7, sticky=W)
-    ttk.Label(main_frame, text="24 hour research").grid(column=2, row=8, sticky=W)
-    speed_up_research_5m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[0])
+    tkinter.ttk.Label(main_frame, text="5 minute research").grid(column=2, row=0, sticky='W')
+    tkinter.ttk.Label(main_frame, text="10 minute research").grid(column=2, row=1, sticky='W')
+    tkinter.ttk.Label(main_frame, text="15 minute research").grid(column=2, row=2, sticky='W')
+    tkinter.ttk.Label(main_frame, text="30 minute research").grid(column=2, row=3, sticky='W')
+    tkinter.ttk.Label(main_frame, text="60 minute research").grid(column=2, row=4, sticky='W')
+    tkinter.ttk.Label(main_frame, text="3 hour research").grid(column=2, row=5, sticky='W')
+    tkinter.ttk.Label(main_frame, text="8 hour research").grid(column=2, row=6, sticky='W')
+    tkinter.ttk.Label(main_frame, text="15 hour research").grid(column=2, row=7, sticky='W')
+    tkinter.ttk.Label(main_frame, text="24 hour research").grid(column=2, row=8, sticky='W')
+    speed_up_research_5m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[0])
     speed_up_research_5m_entry.grid(column=3, row=0)
     speed_up_research_5m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_research_string_vars[0]))
     speed_up_research_5m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[0]))
-    speed_up_research_10m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[1])
+    speed_up_research_10m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[1])
     speed_up_research_10m_entry.grid(column=3, row=1)
     speed_up_research_10m_entry.bind('<FocusIn>',
                                      lambda e: entry_selected(speed_up_research_string_vars[1]))
     speed_up_research_10m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[1]))
-    speed_up_research_15m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[2])
+    speed_up_research_15m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[2])
     speed_up_research_15m_entry.grid(column=3, row=2)
     speed_up_research_15m_entry.bind('<FocusIn>',
                                      lambda e: entry_selected(speed_up_research_string_vars[2]))
     speed_up_research_15m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[2]))
-    speed_up_research_30m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[3])
+    speed_up_research_30m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[3])
     speed_up_research_30m_entry.grid(column=3, row=3)
     speed_up_research_30m_entry.bind('<FocusIn>',
                                      lambda e: entry_selected(speed_up_research_string_vars[3]))
     speed_up_research_30m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[3]))
-    speed_up_research_60m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[4])
+    speed_up_research_60m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[4])
     speed_up_research_60m_entry.grid(column=3, row=4)
     speed_up_research_60m_entry.bind('<FocusIn>',
                                      lambda e: entry_selected(speed_up_research_string_vars[4]))
     speed_up_research_60m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[4]))
-    speed_up_research_3h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[5])
+    speed_up_research_3h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[5])
     speed_up_research_3h_entry.grid(column=3, row=5)
     speed_up_research_3h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_research_string_vars[5]))
     speed_up_research_3h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[5]))
-    speed_up_research_8h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[6])
+    speed_up_research_8h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[6])
     speed_up_research_8h_entry.grid(column=3, row=6)
     speed_up_research_8h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_research_string_vars[6]))
     speed_up_research_8h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[6]))
-    speed_up_research_15h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[7])
+    speed_up_research_15h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[7])
     speed_up_research_15h_entry.grid(column=3, row=7)
     speed_up_research_15h_entry.bind('<FocusIn>',
                                      lambda e: entry_selected(speed_up_research_string_vars[7]))
     speed_up_research_15h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[7]))
-    speed_up_research_24h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[8])
+    speed_up_research_24h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_research_string_vars[8])
     speed_up_research_24h_entry.grid(column=3, row=8)
     speed_up_research_24h_entry.bind('<FocusIn>',
                                      lambda e: entry_selected(speed_up_research_string_vars[8]))
     speed_up_research_24h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_research_string_vars[8]))
 
     # Init Merging GUI
-    ttk.Label(main_frame, text="15 minute merging").grid(column=4, row=0, sticky=W)
-    ttk.Label(main_frame, text="60 minute merging").grid(column=4, row=1, sticky=W)
-    ttk.Label(main_frame, text="3 hour merging").grid(column=4, row=2, sticky=W)
-    ttk.Label(main_frame, text="8 hour merging").grid(column=4, row=3, sticky=W)
-    ttk.Label(main_frame, text="15 hour merging").grid(column=4, row=4, sticky=W)
-    speed_up_merging_15m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[0])
+    tkinter.ttk.Label(main_frame, text="15 minute merging").grid(column=4, row=0, sticky='W')
+    tkinter.ttk.Label(main_frame, text="60 minute merging").grid(column=4, row=1, sticky='W')
+    tkinter.ttk.Label(main_frame, text="8 hour merging").grid(column=4, row=3, sticky='W')
+    tkinter.ttk.Label(main_frame, text="15 hour merging").grid(column=4, row=4, sticky='W')
+    speed_up_merging_15m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[0])
     speed_up_merging_15m_entry.grid(column=5, row=0)
     speed_up_merging_15m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_merging_string_vars[0]))
     speed_up_merging_15m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_merging_string_vars[0]))
-    speed_up_merging_60m_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[1])
+    speed_up_merging_60m_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[1])
     speed_up_merging_60m_entry.grid(column=5, row=1)
     speed_up_merging_60m_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_merging_string_vars[1]))
     speed_up_merging_60m_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_merging_string_vars[1]))
-    speed_up_merging_3h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[2])
+    speed_up_merging_3h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[2])
     speed_up_merging_3h_entry.grid(column=5, row=2)
     speed_up_merging_3h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_merging_string_vars[2]))
     speed_up_merging_3h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_merging_string_vars[2]))
-    speed_up_merging_8h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[3])
+    speed_up_merging_8h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[3])
     speed_up_merging_8h_entry.grid(column=5, row=3)
     speed_up_merging_8h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_merging_string_vars[3]))
     speed_up_merging_8h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_merging_string_vars[3]))
-    speed_up_merging_15h_entry = ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[4])
+    speed_up_merging_15h_entry = tkinter.ttk.Entry(main_frame, width=4, textvariable=speed_up_merging_string_vars[4])
     speed_up_merging_15h_entry.grid(column=5, row=4)
     speed_up_merging_15h_entry.bind('<FocusIn>', lambda e: entry_selected(speed_up_merging_string_vars[4]))
     speed_up_merging_15h_entry.bind('<FocusOut>', lambda e: entry_deselected(speed_up_merging_string_vars[4]))
 
     # Init Results GUI
-    ttk.Label(main_frame, text="Speed Up Total:").grid(column=0, row=100, sticky=W)
-    ttk.Label(main_frame, text="Speed Up Research Total:").grid(column=0, row=101, sticky=W)
-    ttk.Label(main_frame, text="Speed Up Merging Total:").grid(column=0, row=102, sticky=W)
-    ttk.Label(main_frame, textvariable=results_string_vars[0]).grid(column=1, row=100, sticky=(W, E), columnspan=3)
-    ttk.Label(main_frame, textvariable=results_string_vars[1]).grid(column=1, row=101, sticky=(W, E), columnspan=3)
-    ttk.Label(main_frame, textvariable=results_string_vars[2]).grid(column=1, row=102, sticky=(W, E), columnspan=3)
+    tkinter.ttk.Label(main_frame, text="Speed Up Total:").grid(column=0, row=100, sticky='W')
+    tkinter.ttk.Label(main_frame, text="Speed Up Research Total:").grid(column=0, row=101, sticky='W')
+    tkinter.ttk.Label(main_frame, text="Speed Up Merging Total:").grid(column=0, row=102, sticky='W')
+    tkinter.ttk.Label(main_frame, textvariable=results_string_vars[0]).grid(column=1, row=100, sticky=('W', 'E'),
+                                                                            columnspan=3)
+    tkinter.ttk.Label(main_frame, textvariable=results_string_vars[1]).grid(column=1, row=101, sticky=('W', 'E'),
+                                                                            columnspan=3)
+    tkinter.ttk.Label(main_frame, textvariable=results_string_vars[2]).grid(column=1, row=102, sticky=('W', 'E'),
+                                                                            columnspan=3)
 
     # Enter notes for this dataset
-    notes_entry = ttk.Entry(main_frame, width=75, textvariable=data_set_notes_entry_string_var)
-    notes_entry.grid(column=0, row=200, columnspan=5, sticky=W)
+    notes_entry = tkinter.ttk.Entry(main_frame, width=75, textvariable=data_set_notes_entry_string_var)
+    notes_entry.grid(column=0, row=200, columnspan=5, sticky='W')
 
     # Set Save button
-    ttk.Button(main_frame, text="Save to file", command=lambda: save_to_file()).grid(column=5, row=200, sticky=W)
+    tkinter.ttk.Button(main_frame, text="Save to file", command=lambda: save_to_file()).grid(column=5, row=200,
+                                                                                             sticky='W')
 
     # Init hotkeys
     root_tk.bind('<Control-s>', lambda x: save_to_file())
@@ -293,6 +297,10 @@ def print_section(section_title, symbol):
 
 
 def update_totals():
+    """
+    This method updates all the running totals and then updates the GUI
+    :return:    None
+    """
     global results_string_vars
     speed_up_total = 0
     speed_up_total += 3 * int(speed_up_string_vars[0].get())
@@ -332,7 +340,10 @@ def update_totals():
 
 
 def save_to_file():
-    # TODO: Doc this
+    """
+    Saves the data to an output file.
+    :return:    None
+    """
 
     fieldnames_for_csv = [
         "Date/Time",
@@ -375,67 +386,77 @@ def save_to_file():
 
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    with open("LM_boosts.csv", 'a', newline='') as outfile:  # output csv file
-        writer = csv.DictWriter(outfile, fieldnames=fieldnames_for_csv)
-        writer.writerow({"Date/Time": current_time,
-                         "Notes": data_set_notes_entry_string_var.get(),
-                         "Speed_Up_Total": results_string_vars[0].get(),
-                         "Speed_Up_Research_Total": results_string_vars[1].get(),
-                         "Speed_Up_Merging_Total": results_string_vars[2].get(),
-                         "Speed_Up_3m": format_minutes_to_time(int(speed_up_string_vars[0].get()) * 3),
-                         "Speed_Up_5m": format_minutes_to_time(int(speed_up_string_vars[1].get()) * 5),
-                         "Speed_Up_10m": format_minutes_to_time(int(speed_up_string_vars[2].get()) * 10),
-                         "Speed_Up_15m": format_minutes_to_time(int(speed_up_string_vars[3].get()) * 15),
-                         "Speed_Up_30m": format_minutes_to_time(int(speed_up_string_vars[4].get()) * 30),
-                         "Speed_Up_60m": format_minutes_to_time(int(speed_up_string_vars[5].get()) * 60),
-                         "Speed_Up_3h": format_minutes_to_time(int(speed_up_string_vars[6].get()) * 180),
-                         "Speed_Up_8h": format_minutes_to_time(int(speed_up_string_vars[7].get()) * 480),
-                         "Speed_Up_15h": format_minutes_to_time(int(speed_up_string_vars[8].get()) * 900),
-                         "Speed_Up_24h": format_minutes_to_time(int(speed_up_string_vars[9].get()) * 1440),
-                         "Speed_Up_3d": format_minutes_to_time(int(speed_up_string_vars[10].get()) * 4320),
-                         "Speed_Up_Research_5m": format_minutes_to_time(
-                             int(speed_up_research_string_vars[0].get()) * 5),
-                         "Speed_Up_Research_10m": format_minutes_to_time(
-                             int(speed_up_research_string_vars[1].get()) * 10),
-                         "Speed_Up_Research_15m": format_minutes_to_time(
-                             int(speed_up_research_string_vars[2].get()) * 15),
-                         "Speed_Up_Research_30m": format_minutes_to_time(
-                             int(speed_up_research_string_vars[3].get()) * 30),
-                         "Speed_Up_Research_60m": format_minutes_to_time(
-                             int(speed_up_research_string_vars[4].get()) * 60),
-                         "Speed_Up_Research_3h": format_minutes_to_time(
-                             int(speed_up_research_string_vars[5].get()) * 180),
-                         "Speed_Up_Research_8h": format_minutes_to_time(
-                             int(speed_up_research_string_vars[6].get()) * 480),
-                         "Speed_Up_Research_15h": format_minutes_to_time(
-                             int(speed_up_research_string_vars[7].get()) * 900),
-                         "Speed_Up_Research_24h": format_minutes_to_time(
-                             int(speed_up_research_string_vars[8].get()) * 1440),
-                         "Speed_Up_Merging_15m": format_minutes_to_time(
-                             int(speed_up_merging_string_vars[0].get()) * 15),
-                         "Speed_Up_Merging_60m": format_minutes_to_time(
-                             int(speed_up_merging_string_vars[1].get()) * 60),
-                         "Speed_Up_Merging_3h": format_minutes_to_time(
-                             int(speed_up_merging_string_vars[2].get()) * 180),
-                         "Speed_Up_Merging_8h": format_minutes_to_time(
-                             int(speed_up_merging_string_vars[3].get()) * 480),
-                         "Speed_Up_Merging_15h": format_minutes_to_time(
-                             int(speed_up_merging_string_vars[4].get()) * 900)
-                         })
+    try:
+        with open("LM_boosts.csv", 'a', newline='') as outfile:  # output csv file
+            writer = csv.DictWriter(outfile, fieldnames=fieldnames_for_csv)
+            writer.writerow({"Date/Time": current_time,
+                             "Notes": data_set_notes_entry_string_var.get(),
+                             "Speed_Up_Total": results_string_vars[0].get(),
+                             "Speed_Up_Research_Total": results_string_vars[1].get(),
+                             "Speed_Up_Merging_Total": results_string_vars[2].get(),
+                             "Speed_Up_3m": format_minutes_to_time(int(speed_up_string_vars[0].get()) * 3),
+                             "Speed_Up_5m": format_minutes_to_time(int(speed_up_string_vars[1].get()) * 5),
+                             "Speed_Up_10m": format_minutes_to_time(int(speed_up_string_vars[2].get()) * 10),
+                             "Speed_Up_15m": format_minutes_to_time(int(speed_up_string_vars[3].get()) * 15),
+                             "Speed_Up_30m": format_minutes_to_time(int(speed_up_string_vars[4].get()) * 30),
+                             "Speed_Up_60m": format_minutes_to_time(int(speed_up_string_vars[5].get()) * 60),
+                             "Speed_Up_3h": format_minutes_to_time(int(speed_up_string_vars[6].get()) * 180),
+                             "Speed_Up_8h": format_minutes_to_time(int(speed_up_string_vars[7].get()) * 480),
+                             "Speed_Up_15h": format_minutes_to_time(int(speed_up_string_vars[8].get()) * 900),
+                             "Speed_Up_24h": format_minutes_to_time(int(speed_up_string_vars[9].get()) * 1440),
+                             "Speed_Up_3d": format_minutes_to_time(int(speed_up_string_vars[10].get()) * 4320),
+                             "Speed_Up_Research_5m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[0].get()) * 5),
+                             "Speed_Up_Research_10m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[1].get()) * 10),
+                             "Speed_Up_Research_15m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[2].get()) * 15),
+                             "Speed_Up_Research_30m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[3].get()) * 30),
+                             "Speed_Up_Research_60m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[4].get()) * 60),
+                             "Speed_Up_Research_3h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[5].get()) * 180),
+                             "Speed_Up_Research_8h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[6].get()) * 480),
+                             "Speed_Up_Research_15h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[7].get()) * 900),
+                             "Speed_Up_Research_24h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[8].get()) * 1440),
+                             "Speed_Up_Merging_15m": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[0].get()) * 15),
+                             "Speed_Up_Merging_60m": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[1].get()) * 60),
+                             "Speed_Up_Merging_3h": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[2].get()) * 180),
+                             "Speed_Up_Merging_8h": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[3].get()) * 480),
+                             "Speed_Up_Merging_15h": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[4].get()) * 900)
+                             })
 
-    os.startfile("LM_boosts.csv")
+        os.startfile("LM_boosts.csv")
+    except:
+        tkinter.messagebox.showinfo("Error opening CSV file",
+                                    "The CSV file you are trying to save to is already open. "
+                                    "You need to close it in order for this program to save new information to it.")
 
 
 def entry_selected(string_var):
-    # TODO: Doc this
+    """
+    If an entry box is clicked and the current StringVar value of the box is 0, clear the box.
+    """
     if string_var.get() == '0':
         string_var.set('')
 
 
 def entry_deselected(string_var):
-    # TODO: Doc this
+    """
+    If an entry box is deselected without a value being entered in it, set the StringVar to 0.
+    """
     try:
-        i = int(string_var.get())
+        # Make sure the value entered is an int
+        int(string_var.get())
     except:
         string_var.set(0)
 
