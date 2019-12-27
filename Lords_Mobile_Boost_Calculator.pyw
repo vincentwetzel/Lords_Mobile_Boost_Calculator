@@ -1,14 +1,11 @@
-""" Pad everything in the grid
-for frame_number in tk_frames:
-    for child in tk_frames[frame_number].winfo_children():
-        child.grid_configure(padx=5, pady=5)
-"""
+#! /usr/bin/env python3
 
 import logging
 import sys
 import tkinter
 import tkinter.ttk
 import tkinter.messagebox
+import tkinter.filedialog
 from datetime import datetime
 import csv
 import os
@@ -17,16 +14,6 @@ from PIL import ImageTk, Image
 # NOTE TO USER: use logging.DEBUG for testing, logging.CRITICAL for runtime
 logging.basicConfig(stream=sys.stderr,
                     level=logging.CRITICAL)
-
-SPEED_UP_ITEMS_COUNT = 14
-SPEED_UP_RESEARCH_ITEMS_COUNT = 10
-SPEED_UP_WALL_REPAIR_COUNT = 5
-SPEED_UP_HEALING_COUNT = 4
-SPEED_UP_TRAINING_COUNT = 7
-SPEED_UP_MERGING_ITEMS_COUNT = 9
-
-TABS_COUNT = 6
-IMG_SCALE = 50
 
 results_string_vars = list()
 """
@@ -397,6 +384,16 @@ speed_up_training_image_locations = [
     "assets/speed_up_training/speed_up_training_3d.png",
 ]
 
+SPEED_UP_ITEMS_COUNT = 14
+SPEED_UP_RESEARCH_ITEMS_COUNT = 10
+SPEED_UP_WALL_REPAIR_COUNT = 5
+SPEED_UP_HEALING_COUNT = 4
+SPEED_UP_TRAINING_COUNT = 7
+SPEED_UP_MERGING_ITEMS_COUNT = 9
+
+TABS_COUNT = 6
+IMG_SCALE = 50
+
 labels = [speed_up_labels, speed_up_research_labels, speed_up_wall_repair_labels,
           speed_up_healing_labels, speed_up_training_labels, speed_up_merging_labels]
 tk_images = [speed_up_tk_images, speed_up_research_tk_images, speed_up_wall_repair_tk_images,
@@ -408,15 +405,13 @@ string_vars = [speed_up_string_vars, speed_up_research_string_vars, speed_up_wal
                speed_up_healing_string_vars, speed_up_training_string_vars, speed_up_merging_string_vars]
 entries = [speed_up_entries, speed_up_research_entries, speed_up_wall_repair_entries,
            speed_up_healing_entries, speed_up_training_entries, speed_up_merging_entries]
-counters = [SPEED_UP_ITEMS_COUNT, SPEED_UP_RESEARCH_ITEMS_COUNT, SPEED_UP_WALL_REPAIR_COUNT, SPEED_UP_HEALING_COUNT,
-            SPEED_UP_TRAINING_COUNT, SPEED_UP_MERGING_ITEMS_COUNT]
+counter_constants_list = [SPEED_UP_ITEMS_COUNT, SPEED_UP_RESEARCH_ITEMS_COUNT, SPEED_UP_WALL_REPAIR_COUNT,
+                          SPEED_UP_HEALING_COUNT, SPEED_UP_TRAINING_COUNT, SPEED_UP_MERGING_ITEMS_COUNT]
 
 data_set_notes_entry_string_var = None
 root_tk = None
 notebook = None
 tk_frames = list()
-
-save_file = "LM_boosts.csv"
 
 
 def main():
@@ -435,7 +430,7 @@ def main():
 
     notebook = tkinter.ttk.Notebook(root_tk)
 
-    for i in range(TABS_COUNT):
+    for tab in range(TABS_COUNT):
         tk_frames.append(tkinter.ttk.Frame(notebook, padding="3 3 12 12"))
 
     notebook.add(tk_frames[0], text="Speed Up")
@@ -446,8 +441,9 @@ def main():
     notebook.add(tk_frames[5], text="Merging")
 
     notebook.grid()
+    notebook.enable_traversal()  # Allows CTRL + Tab
 
-    for i in range(TABS_COUNT):
+    for result_str in range(TABS_COUNT):
         results_string_vars.append(tkinter.StringVar(value="0 minutes"))
 
     global labels
@@ -456,22 +452,37 @@ def main():
     global string_vars
     global entries
 
-    for c in range(TABS_COUNT):
-        init_frame(c, counters[c], labels[c], tk_images[c], image_locations[c], string_vars[c], entries[c])
+    for curr_tab_counter in range(TABS_COUNT):
+        init_frame(curr_tab_counter, tk_frames[curr_tab_counter], counter_constants_list[curr_tab_counter],
+                   labels[curr_tab_counter], tk_images[curr_tab_counter], image_locations[curr_tab_counter],
+                   string_vars[curr_tab_counter], entries[curr_tab_counter])
 
     # Init hotkeys
-    root_tk.bind('<Control-s>', lambda x: save_to_file())
-    root_tk.bind('<Return>', lambda x: update_totals())
+    root_tk.bind_all('<Control-s>', lambda x: save_to_file())
+    root_tk.bind_all('<Return>', lambda x: update_totals())
 
     # Start the main program loop
     root_tk.mainloop()
     exit()
 
-    # Done!
+    # End Script!
 
 
-def init_frame(frame_number, counters_param, labels_list, tk_images_list, image_locations_list, string_vars_list,
+def init_frame(frame_idx, current_frame, counters_param, labels_list, tk_images_list, image_locations_list,
+               string_vars_list,
                entries_list):
+    """
+    Initializes a tkinter Frame object for the calculator.
+    :param frame_idx: The index of the frame being created. All frames are stored in a list.
+    :param current_frame: The Frame Object we are currently initializing.
+    :param counters_param: Controls how many calculator fields exist in this frame.
+    :param labels_list: A list to hold Labels will ultimately hold pictures.
+    :param tk_images_list: A list to hold ImageTK Objects. These are then put onto Labels.
+    :param image_locations_list: A list image files that will be used to create ImageTK objects.
+    :param string_vars_list: A list to hold StringVar Objects associated with Entry fields in this calculator.
+    :param entries_list: A list to hold Entry Objects for the user to interact with the calculator.
+    :return:
+    """
     global tk_frames
     global IMG_SCALE
     global data_set_notes_entry_string_var
@@ -484,14 +495,14 @@ def init_frame(frame_number, counters_param, labels_list, tk_images_list, image_
         tk_images_list.append(ImageTk.PhotoImage(image))
 
         # Create a Label and display the image in the grid
-        labels_list.append(tkinter.ttk.Label(tk_frames[frame_number], image=tk_images_list[label_counter]))
+        labels_list.append(tkinter.ttk.Label(current_frame, image=tk_images_list[label_counter]))
         labels_list[label_counter].grid(column=0, row=label_counter, sticky='W')
 
     # Init Entries
     for entry_counter in range(counters_param):
         string_vars_list.append(tkinter.StringVar(value=0))
         entries_list.append(
-            tkinter.ttk.Entry(tk_frames[frame_number], width=4, textvariable=string_vars_list[entry_counter]))
+            tkinter.ttk.Entry(current_frame, width=4, textvariable=string_vars_list[entry_counter]))
         entries_list[entry_counter].grid(column=1, row=entry_counter)
         entries_list[entry_counter].bind('<FocusIn>',
                                          lambda_to_bind_string_var_to_entry_selected(string_vars_list[entry_counter]))
@@ -499,52 +510,52 @@ def init_frame(frame_number, counters_param, labels_list, tk_images_list, image_
                                          lambda_to_bind_string_var_to_entry_deselected(string_vars_list[entry_counter]))
 
     # Init Main Frame Results GUI
-    tkinter.ttk.Label(tk_frames[frame_number], text="Speed Up Total:").grid(column=0, row=100, sticky='W',
-                                                                            columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], text="Speed Up Research Total:").grid(column=0, row=101,
-                                                                                     sticky='W', columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], text="Speed Up Wall Repair Total:").grid(column=0, row=102, sticky='W',
-                                                                                        columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], text="Speed Up Healing Total:").grid(column=0, row=103, sticky='W',
-                                                                                    columnspan=2)
+    tkinter.ttk.Label(current_frame, text="Speed Up Total:").grid(column=0, row=100, sticky='W',
+                                                                  columnspan=2)
+    tkinter.ttk.Label(current_frame, text="Speed Up Research Total:").grid(column=0, row=101,
+                                                                           sticky='W', columnspan=2)
+    tkinter.ttk.Label(current_frame, text="Speed Up Wall Repair Total:").grid(column=0, row=102, sticky='W',
+                                                                              columnspan=2)
+    tkinter.ttk.Label(current_frame, text="Speed Up Healing Total:").grid(column=0, row=103, sticky='W',
+                                                                          columnspan=2)
 
-    tkinter.ttk.Label(tk_frames[frame_number], text="Speed Up Training Total:").grid(column=0, row=104, sticky='W',
-                                                                                     columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], text="Speed Up Merging Total:").grid(column=0, row=105, sticky='W',
-                                                                                    columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], textvariable=results_string_vars[0]).grid(column=2, row=100,
-                                                                                         sticky=('W', 'E'),
-                                                                                         columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], textvariable=results_string_vars[1]).grid(column=2, row=101,
-                                                                                         sticky=('W', 'E'),
-                                                                                         columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], textvariable=results_string_vars[2]).grid(column=2, row=102,
-                                                                                         sticky=('W', 'E'),
-                                                                                         columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], textvariable=results_string_vars[3]).grid(column=2, row=103,
-                                                                                         sticky=('W', 'E'),
-                                                                                         columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], textvariable=results_string_vars[4]).grid(column=2, row=104,
-                                                                                         sticky=('W', 'E'),
-                                                                                         columnspan=2)
-    tkinter.ttk.Label(tk_frames[frame_number], textvariable=results_string_vars[5]).grid(column=2, row=105,
-                                                                                         sticky=('W', 'E'),
-                                                                                         columnspan=2)
+    tkinter.ttk.Label(current_frame, text="Speed Up Training Total:").grid(column=0, row=104, sticky='W',
+                                                                           columnspan=2)
+    tkinter.ttk.Label(current_frame, text="Speed Up Merging Total:").grid(column=0, row=105, sticky='W',
+                                                                          columnspan=2)
+    tkinter.ttk.Label(current_frame, textvariable=results_string_vars[0]).grid(column=2, row=100,
+                                                                               sticky=('W', 'E'),
+                                                                               columnspan=2)
+    tkinter.ttk.Label(current_frame, textvariable=results_string_vars[1]).grid(column=2, row=101,
+                                                                               sticky=('W', 'E'),
+                                                                               columnspan=2)
+    tkinter.ttk.Label(current_frame, textvariable=results_string_vars[2]).grid(column=2, row=102,
+                                                                               sticky=('W', 'E'),
+                                                                               columnspan=2)
+    tkinter.ttk.Label(current_frame, textvariable=results_string_vars[3]).grid(column=2, row=103,
+                                                                               sticky=('W', 'E'),
+                                                                               columnspan=2)
+    tkinter.ttk.Label(current_frame, textvariable=results_string_vars[4]).grid(column=2, row=104,
+                                                                               sticky=('W', 'E'),
+                                                                               columnspan=2)
+    tkinter.ttk.Label(current_frame, textvariable=results_string_vars[5]).grid(column=2, row=105,
+                                                                               sticky=('W', 'E'),
+                                                                               columnspan=2)
 
     # Reset buttons
-    tkinter.ttk.Button(tk_frames[frame_number], text="Reset",
-                       command=lambda: reset_all_values_in_frame(frame_number)).grid(column=0, row=200,
-                                                                                     sticky='W')
-    tkinter.ttk.Button(tk_frames[frame_number], text="Reset All",
+    tkinter.ttk.Button(current_frame, text="Reset",
+                       command=lambda: reset_all_values_in_frame(frame_idx)).grid(column=0, row=200,
+                                                                                  sticky='W')
+    tkinter.ttk.Button(current_frame, text="Reset All",
                        command=lambda: reset_all_values()).grid(column=1, row=200, sticky='W')
     # Enter notes for this dataset
-    tkinter.ttk.Label(tk_frames[frame_number], text="Notes:").grid(column=0, row=201, sticky='W', )
-    notes_entry = tkinter.ttk.Entry(tk_frames[frame_number], width=75,
+    tkinter.ttk.Label(current_frame, text="Notes:").grid(column=0, row=201, sticky='W', )
+    notes_entry = tkinter.ttk.Entry(current_frame, width=75,
                                     textvariable=data_set_notes_entry_string_var)
     notes_entry.grid(column=1, row=201, columnspan=4, sticky='W')
 
     # Set Save button
-    tkinter.ttk.Button(tk_frames[frame_number], text="Save to file", command=lambda: save_to_file()).grid(
+    tkinter.ttk.Button(current_frame, text="Save to file", command=lambda: save_to_file()).grid(
         column=5, row=201,
         sticky='W')
 
@@ -690,249 +701,6 @@ def update_totals():
         return
 
 
-def save_to_file(confirm_save=False):
-    """
-    Saves the data to an output file.
-    :return:    None
-    """
-    print("STF called")
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    global notebook
-    if notebook.index(notebook.select()) == 0:
-        if confirm_save or tkinter.messagebox.askyesno(title="Save to File", message="Do you want to save this data?"):
-
-            fieldnames_for_csv = [
-                "Date/Time",
-                "Notes",
-
-                "Speed_Up_Total",
-                "Speed_Up_Research_Total",
-                "Speed_Up_Wall_Repair_Total",
-                "Speed_Up_Healing_Total",
-                "Speed_Up_Training_Total",
-                "Speed_Up_Merging_Total",
-
-                "Speed_Up_1m",
-                "Speed_Up_3m",
-                "Speed_Up_5m",
-                "Speed_Up_10m",
-                "Speed_Up_15m",
-                "Speed_Up_30m",
-                "Speed_Up_60m",
-                "Speed_Up_3h",
-                "Speed_Up_8h",
-                "Speed_Up_15h",
-                "Speed_Up_24h",
-                "Speed_Up_3d",
-                "Speed_Up_7d",
-                "Speed_Up_30d",
-
-                "Speed_Up_Research_5m",
-                "Speed_Up_Research_10m",
-                "Speed_Up_Research_15m",
-                "Speed_Up_Research_30m",
-                "Speed_Up_Research_60m",
-                "Speed_Up_Research_3h",
-                "Speed_Up_Research_8h",
-                "Speed_Up_Research_15h",
-                "Speed_Up_Research_24h",
-                "Speed_Up_Research_3d",
-
-                "Speed_Up_Wall_Repair_15m",
-                "Speed_Up_Wall_Repair_60m",
-                "Speed_Up_Wall_Repair_3h",
-                "Speed_Up_Wall_Repair_8h",
-                "Speed_Up_Wall_Repair_24h",
-
-                "Speed_Up_Healing_15m",
-                "Speed_Up_Healing_60m",
-                "Speed_Up_Healing_3h",
-                "Speed_Up_Healing_8h",
-
-                "Speed_Up_Training_10m",
-                "Speed_Up_Training_30m",
-                "Speed_Up_Training_60m",
-                "Speed_Up_Training_3h",
-                "Speed_Up_Training_8h",
-                "Speed_Up_Training_24h",
-                "Speed_Up_Training_3d",
-
-                "Speed_Up_Merging_1m",
-                "Speed_Up_Merging_15m",
-                "Speed_Up_Merging_15m",
-                "Speed_Up_Merging_60m",
-                "Speed_Up_Merging_3h",
-                "Speed_Up_Merging_8h",
-                "Speed_Up_Merging_15h",
-                "Speed_Up_Merging_24h",
-                "Speed_Up_Merging_3d",
-                "Speed_Up_Merging_7d"
-            ]
-
-            global speed_up_string_vars
-            global speed_up_research_string_vars
-            global speed_up_wall_repair_string_vars
-            global speed_up_healing_string_vars
-            global speed_up_training_string_vars
-            global speed_up_merging_string_vars
-
-            global results_string_vars
-            global data_set_notes_entry_string_var
-            global save_file
-
-            try:
-                # If the file doesn't exist, create it
-                if not os.path.exists(save_file):
-                    with open(save_file, 'w', newline='') as fnew:
-                        writer = csv.DictWriter(fnew, fieldnames=fieldnames_for_csv)
-                        writer.writeheader()
-
-                # Append the current set of data to the file
-                with open(save_file, 'a', newline='') as outfile:  # output csv file
-                    # Make sure there are no blank strings (focused Entry) that will cause errors
-                    for count, x in enumerate(speed_up_string_vars):
-                        if speed_up_string_vars[count].get() == "":
-                            speed_up_string_vars[count].set(0)
-                    for count, x in enumerate(speed_up_research_string_vars):
-                        if speed_up_research_string_vars[count].get() == "":
-                            speed_up_research_string_vars[count].set(0)
-                    for count, x in enumerate(speed_up_wall_repair_string_vars):
-                        if speed_up_wall_repair_string_vars[count].get() == "":
-                            speed_up_wall_repair_string_vars[count].set(0)
-                    for count, x in enumerate(speed_up_healing_string_vars):
-                        if speed_up_healing_string_vars[count].get() == "":
-                            speed_up_healing_string_vars[count].set(0)
-                    for count, x in enumerate(speed_up_training_string_vars):
-                        if speed_up_training_string_vars[count].get() == "":
-                            speed_up_training_string_vars[count].set(0)
-                    for count, x in enumerate(speed_up_merging_string_vars):
-                        if speed_up_merging_string_vars[count].get() == "":
-                            speed_up_merging_string_vars[count].set(0)
-                    # Open outfile
-                    writer = csv.DictWriter(outfile, fieldnames=fieldnames_for_csv)
-
-                    # Write to outfile
-                    writer.writerow({"Date/Time": current_time,
-                                     "Notes": data_set_notes_entry_string_var.get(),
-                                     "Speed_Up_Total": results_string_vars[0].get(),
-                                     "Speed_Up_Research_Total": results_string_vars[1].get(),
-                                     "Speed_Up_Wall_Repair_Total": results_string_vars[2].get(),
-                                     "Speed_Up_Healing_Total": results_string_vars[3].get(),
-                                     "Speed_Up_Training_Total": results_string_vars[4].get(),
-                                     "Speed_Up_Merging_Total": results_string_vars[5].get(),
-
-                                     "Speed_Up_1m": format_minutes_to_time(int(speed_up_string_vars[0].get()) * 1),
-                                     "Speed_Up_3m": format_minutes_to_time(int(speed_up_string_vars[1].get()) * 3),
-                                     "Speed_Up_5m": format_minutes_to_time(int(speed_up_string_vars[2].get()) * 5),
-                                     "Speed_Up_10m": format_minutes_to_time(
-                                         int(speed_up_string_vars[3].get()) * 10),
-                                     "Speed_Up_15m": format_minutes_to_time(
-                                         int(speed_up_string_vars[4].get()) * 15),
-                                     "Speed_Up_30m": format_minutes_to_time(
-                                         int(speed_up_string_vars[5].get()) * 30),
-                                     "Speed_Up_60m": format_minutes_to_time(
-                                         int(speed_up_string_vars[6].get()) * 60),
-                                     "Speed_Up_3h": format_minutes_to_time(
-                                         int(speed_up_string_vars[7].get()) * 180),
-                                     "Speed_Up_8h": format_minutes_to_time(
-                                         int(speed_up_string_vars[8].get()) * 480),
-                                     "Speed_Up_15h": format_minutes_to_time(
-                                         int(speed_up_string_vars[9].get()) * 900),
-                                     "Speed_Up_24h": format_minutes_to_time(
-                                         int(speed_up_string_vars[10].get()) * 1440),
-                                     "Speed_Up_3d": format_minutes_to_time(
-                                         int(speed_up_string_vars[11].get()) * 4320),
-                                     "Speed_Up_7d": format_minutes_to_time(
-                                         int(speed_up_string_vars[12].get()) * 10080),
-                                     "Speed_Up_30d": format_minutes_to_time(
-                                         int(speed_up_string_vars[13].get()) * 43200),
-
-                                     "Speed_Up_Research_5m": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[0].get()) * 5),
-                                     "Speed_Up_Research_10m": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[1].get()) * 10),
-                                     "Speed_Up_Research_15m": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[2].get()) * 15),
-                                     "Speed_Up_Research_30m": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[3].get()) * 30),
-                                     "Speed_Up_Research_60m": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[4].get()) * 60),
-                                     "Speed_Up_Research_3h": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[5].get()) * 180),
-                                     "Speed_Up_Research_8h": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[6].get()) * 480),
-                                     "Speed_Up_Research_15h": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[7].get()) * 900),
-                                     "Speed_Up_Research_24h": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[8].get()) * 1440),
-                                     "Speed_Up_Research_3d": format_minutes_to_time(
-                                         int(speed_up_research_string_vars[9].get()) * 4320),
-
-                                     "Speed_Up_Wall_Repair_15m": format_minutes_to_time(
-                                         int(speed_up_wall_repair_string_vars[0].get()) * 15),
-                                     "Speed_Up_Wall_Repair_60m": format_minutes_to_time(
-                                         int(speed_up_wall_repair_string_vars[1].get()) * 60),
-                                     "Speed_Up_Wall_Repair_3h": format_minutes_to_time(
-                                         int(speed_up_wall_repair_string_vars[2].get()) * 180),
-                                     "Speed_Up_Wall_Repair_8h": format_minutes_to_time(
-                                         int(speed_up_wall_repair_string_vars[3].get()) * 480),
-                                     "Speed_Up_Wall_Repair_24h": format_minutes_to_time(
-                                         int(speed_up_wall_repair_string_vars[4].get()) * 1440),
-
-                                     "Speed_Up_Healing_15m": format_minutes_to_time(
-                                         int(speed_up_healing_string_vars[0].get()) * 15),
-                                     "Speed_Up_Healing_60m": format_minutes_to_time(
-                                         int(speed_up_healing_string_vars[1].get()) * 60),
-                                     "Speed_Up_Healing_3h": format_minutes_to_time(
-                                         int(speed_up_healing_string_vars[2].get()) * 180),
-                                     "Speed_Up_Healing_8h": format_minutes_to_time(
-                                         int(speed_up_healing_string_vars[3].get()) * 480),
-
-                                     "Speed_Up_Training_10m": format_minutes_to_time(
-                                         int(speed_up_training_string_vars[0].get()) * 10),
-                                     "Speed_Up_Training_30m": format_minutes_to_time(
-                                         int(speed_up_training_string_vars[1].get()) * 30),
-                                     "Speed_Up_Training_60m": format_minutes_to_time(
-                                         int(speed_up_training_string_vars[2].get()) * 60),
-                                     "Speed_Up_Training_3h": format_minutes_to_time(
-                                         int(speed_up_training_string_vars[3].get()) * 180),
-                                     "Speed_Up_Training_8h": format_minutes_to_time(
-                                         int(speed_up_training_string_vars[4].get()) * 480),
-                                     "Speed_Up_Training_24h": format_minutes_to_time(
-                                         int(speed_up_training_string_vars[5].get()) * 1440),
-                                     "Speed_Up_Training_3d": format_minutes_to_time(
-                                         int(speed_up_training_string_vars[6].get()) * 4320),
-
-                                     "Speed_Up_Merging_1m": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[0].get()) * 1),
-                                     "Speed_Up_Merging_15m": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[1].get()) * 15),
-                                     "Speed_Up_Merging_60m": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[2].get()) * 60),
-                                     "Speed_Up_Merging_3h": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[3].get()) * 180),
-                                     "Speed_Up_Merging_8h": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[4].get()) * 480),
-                                     "Speed_Up_Merging_15h": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[5].get()) * 900),
-                                     "Speed_Up_Merging_24h": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[6].get()) * 1440),
-                                     "Speed_Up_Merging_3d": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[7].get()) * 4320),
-                                     "Speed_Up_Merging_7d": format_minutes_to_time(
-                                         int(speed_up_merging_string_vars[8].get()) * 10080)
-                                     })
-                if tkinter.messagebox.askyesno(title="Would you like to open the file?",
-                                               message="The file has been saved. Would you like to open it?"):
-                    os.startfile(save_file)
-            except PermissionError:
-                if tkinter.messagebox.askretrycancel("Error opening CSV file",
-                                                     "The CSV file you are trying to save to is already open. "
-                                                     "Close the file then retry."):
-                    save_to_file(confirm_save=True)
-
-
 def lambda_to_bind_string_var_to_entry_selected(string_var_to_bind_to_entry):
     return lambda x: entry_selected(string_var_to_bind_to_entry)
 
@@ -968,19 +736,10 @@ def reset_all_values_in_frame(frame_number):
     """
 
     global string_vars
-    global counters
+    global counter_constants_list
 
-    for i in range(counters[frame_number]):
+    for i in range(counter_constants_list[frame_number]):
         string_vars[frame_number][i].set(0)
-
-    """for i in range(len(speed_up_string_vars)):
-        speed_up_string_vars[i].set(0)
-
-    for i in range(len(speed_up_research_string_vars)):
-        speed_up_research_string_vars[i].set(0)
-
-    for i in range(len(speed_up_merging_string_vars)):
-        speed_up_merging_string_vars[i].set(0)"""
 
     update_totals()
 
@@ -1012,6 +771,266 @@ def reset_all_values():
         speed_up_merging_string_vars[i].set(0)
 
     update_totals()
+
+
+def save_to_file(confirm_save=False):
+    """
+    Saves the data to an output file.
+    :return:    None
+    """
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    try:
+        save_file_name = open("settings.ini", 'r').readline().strip()
+    except FileNotFoundError:
+        save_file_name = ""
+
+    if not confirm_save:
+        if save_file_name == "":
+            save_file_name = tkinter.filedialog.asksaveasfilename(title="Save File", defaultextension='csv',
+                                                                  filetypes=[("Comma Seperated Values", ".csv")])
+            with open('settings.ini', 'w') as settings_file:
+                settings_file.write(save_file_name)
+        else:
+            response = tkinter.messagebox.askyesnocancel(title="Save File",
+                                                         message="Would you like to save this file as: " + save_file_name + "?")
+            if response:
+                pass
+            if not response:
+                # "No" response, rename file
+                save_file_name = tkinter.filedialog.asksaveasfilename(title="Save File", defaultextension='csv',
+                                                                      filetypes=[("Comma Seperated Values", ".csv")])
+                with open('settings.ini', 'w') as settings_file:
+                    settings_file.write(save_file_name)
+            elif response is None:
+                # Cancelled or dialogue window closed
+                return
+
+    fieldnames_for_csv = [
+        "Date/Time",
+        "Notes",
+
+        "Speed_Up_Total",
+        "Speed_Up_Research_Total",
+        "Speed_Up_Wall_Repair_Total",
+        "Speed_Up_Healing_Total",
+        "Speed_Up_Training_Total",
+        "Speed_Up_Merging_Total",
+
+        "Speed_Up_1m",
+        "Speed_Up_3m",
+        "Speed_Up_5m",
+        "Speed_Up_10m",
+        "Speed_Up_15m",
+        "Speed_Up_30m",
+        "Speed_Up_60m",
+        "Speed_Up_3h",
+        "Speed_Up_8h",
+        "Speed_Up_15h",
+        "Speed_Up_24h",
+        "Speed_Up_3d",
+        "Speed_Up_7d",
+        "Speed_Up_30d",
+
+        "Speed_Up_Research_5m",
+        "Speed_Up_Research_10m",
+        "Speed_Up_Research_15m",
+        "Speed_Up_Research_30m",
+        "Speed_Up_Research_60m",
+        "Speed_Up_Research_3h",
+        "Speed_Up_Research_8h",
+        "Speed_Up_Research_15h",
+        "Speed_Up_Research_24h",
+        "Speed_Up_Research_3d",
+
+        "Speed_Up_Wall_Repair_15m",
+        "Speed_Up_Wall_Repair_60m",
+        "Speed_Up_Wall_Repair_3h",
+        "Speed_Up_Wall_Repair_8h",
+        "Speed_Up_Wall_Repair_24h",
+
+        "Speed_Up_Healing_15m",
+        "Speed_Up_Healing_60m",
+        "Speed_Up_Healing_3h",
+        "Speed_Up_Healing_8h",
+
+        "Speed_Up_Training_10m",
+        "Speed_Up_Training_30m",
+        "Speed_Up_Training_60m",
+        "Speed_Up_Training_3h",
+        "Speed_Up_Training_8h",
+        "Speed_Up_Training_24h",
+        "Speed_Up_Training_3d",
+
+        "Speed_Up_Merging_1m",
+        "Speed_Up_Merging_15m",
+        "Speed_Up_Merging_15m",
+        "Speed_Up_Merging_60m",
+        "Speed_Up_Merging_3h",
+        "Speed_Up_Merging_8h",
+        "Speed_Up_Merging_15h",
+        "Speed_Up_Merging_24h",
+        "Speed_Up_Merging_3d",
+        "Speed_Up_Merging_7d"
+    ]
+
+    global speed_up_string_vars
+    global speed_up_research_string_vars
+    global speed_up_wall_repair_string_vars
+    global speed_up_healing_string_vars
+    global speed_up_training_string_vars
+    global speed_up_merging_string_vars
+
+    global results_string_vars
+    global data_set_notes_entry_string_var
+
+    try:
+        # If the file doesn't exist, create it
+        if not os.path.exists(save_file_name):
+            with open(save_file_name, 'x', newline='') as fnew:
+                writer = csv.DictWriter(fnew, fieldnames=fieldnames_for_csv)
+                writer.writeheader()
+
+        # Append the current set of data to the file
+        with open(save_file_name, 'a', newline='') as outfile:  # output csv file
+            # Make sure there are no blank strings (focused Entry) that will cause errors
+            for count, x in enumerate(speed_up_string_vars):
+                if speed_up_string_vars[count].get() == "":
+                    speed_up_string_vars[count].set(0)
+            for count, x in enumerate(speed_up_research_string_vars):
+                if speed_up_research_string_vars[count].get() == "":
+                    speed_up_research_string_vars[count].set(0)
+            for count, x in enumerate(speed_up_wall_repair_string_vars):
+                if speed_up_wall_repair_string_vars[count].get() == "":
+                    speed_up_wall_repair_string_vars[count].set(0)
+            for count, x in enumerate(speed_up_healing_string_vars):
+                if speed_up_healing_string_vars[count].get() == "":
+                    speed_up_healing_string_vars[count].set(0)
+            for count, x in enumerate(speed_up_training_string_vars):
+                if speed_up_training_string_vars[count].get() == "":
+                    speed_up_training_string_vars[count].set(0)
+            for count, x in enumerate(speed_up_merging_string_vars):
+                if speed_up_merging_string_vars[count].get() == "":
+                    speed_up_merging_string_vars[count].set(0)
+            # Open outfile
+            writer = csv.DictWriter(outfile, fieldnames=fieldnames_for_csv)
+
+            # Write to outfile
+            writer.writerow({"Date/Time": current_time,
+                             "Notes": data_set_notes_entry_string_var.get(),
+                             "Speed_Up_Total": results_string_vars[0].get(),
+                             "Speed_Up_Research_Total": results_string_vars[1].get(),
+                             "Speed_Up_Wall_Repair_Total": results_string_vars[2].get(),
+                             "Speed_Up_Healing_Total": results_string_vars[3].get(),
+                             "Speed_Up_Training_Total": results_string_vars[4].get(),
+                             "Speed_Up_Merging_Total": results_string_vars[5].get(),
+
+                             "Speed_Up_1m": format_minutes_to_time(int(speed_up_string_vars[0].get()) * 1),
+                             "Speed_Up_3m": format_minutes_to_time(int(speed_up_string_vars[1].get()) * 3),
+                             "Speed_Up_5m": format_minutes_to_time(int(speed_up_string_vars[2].get()) * 5),
+                             "Speed_Up_10m": format_minutes_to_time(
+                                 int(speed_up_string_vars[3].get()) * 10),
+                             "Speed_Up_15m": format_minutes_to_time(
+                                 int(speed_up_string_vars[4].get()) * 15),
+                             "Speed_Up_30m": format_minutes_to_time(
+                                 int(speed_up_string_vars[5].get()) * 30),
+                             "Speed_Up_60m": format_minutes_to_time(
+                                 int(speed_up_string_vars[6].get()) * 60),
+                             "Speed_Up_3h": format_minutes_to_time(
+                                 int(speed_up_string_vars[7].get()) * 180),
+                             "Speed_Up_8h": format_minutes_to_time(
+                                 int(speed_up_string_vars[8].get()) * 480),
+                             "Speed_Up_15h": format_minutes_to_time(
+                                 int(speed_up_string_vars[9].get()) * 900),
+                             "Speed_Up_24h": format_minutes_to_time(
+                                 int(speed_up_string_vars[10].get()) * 1440),
+                             "Speed_Up_3d": format_minutes_to_time(
+                                 int(speed_up_string_vars[11].get()) * 4320),
+                             "Speed_Up_7d": format_minutes_to_time(
+                                 int(speed_up_string_vars[12].get()) * 10080),
+                             "Speed_Up_30d": format_minutes_to_time(
+                                 int(speed_up_string_vars[13].get()) * 43200),
+
+                             "Speed_Up_Research_5m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[0].get()) * 5),
+                             "Speed_Up_Research_10m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[1].get()) * 10),
+                             "Speed_Up_Research_15m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[2].get()) * 15),
+                             "Speed_Up_Research_30m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[3].get()) * 30),
+                             "Speed_Up_Research_60m": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[4].get()) * 60),
+                             "Speed_Up_Research_3h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[5].get()) * 180),
+                             "Speed_Up_Research_8h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[6].get()) * 480),
+                             "Speed_Up_Research_15h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[7].get()) * 900),
+                             "Speed_Up_Research_24h": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[8].get()) * 1440),
+                             "Speed_Up_Research_3d": format_minutes_to_time(
+                                 int(speed_up_research_string_vars[9].get()) * 4320),
+
+                             "Speed_Up_Wall_Repair_15m": format_minutes_to_time(
+                                 int(speed_up_wall_repair_string_vars[0].get()) * 15),
+                             "Speed_Up_Wall_Repair_60m": format_minutes_to_time(
+                                 int(speed_up_wall_repair_string_vars[1].get()) * 60),
+                             "Speed_Up_Wall_Repair_3h": format_minutes_to_time(
+                                 int(speed_up_wall_repair_string_vars[2].get()) * 180),
+                             "Speed_Up_Wall_Repair_8h": format_minutes_to_time(
+                                 int(speed_up_wall_repair_string_vars[3].get()) * 480),
+                             "Speed_Up_Wall_Repair_24h": format_minutes_to_time(
+                                 int(speed_up_wall_repair_string_vars[4].get()) * 1440),
+
+                             "Speed_Up_Healing_15m": format_minutes_to_time(
+                                 int(speed_up_healing_string_vars[0].get()) * 15),
+                             "Speed_Up_Healing_60m": format_minutes_to_time(
+                                 int(speed_up_healing_string_vars[1].get()) * 60),
+                             "Speed_Up_Healing_3h": format_minutes_to_time(
+                                 int(speed_up_healing_string_vars[2].get()) * 180),
+                             "Speed_Up_Healing_8h": format_minutes_to_time(
+                                 int(speed_up_healing_string_vars[3].get()) * 480),
+
+                             "Speed_Up_Training_10m": format_minutes_to_time(
+                                 int(speed_up_training_string_vars[0].get()) * 10),
+                             "Speed_Up_Training_30m": format_minutes_to_time(
+                                 int(speed_up_training_string_vars[1].get()) * 30),
+                             "Speed_Up_Training_60m": format_minutes_to_time(
+                                 int(speed_up_training_string_vars[2].get()) * 60),
+                             "Speed_Up_Training_3h": format_minutes_to_time(
+                                 int(speed_up_training_string_vars[3].get()) * 180),
+                             "Speed_Up_Training_8h": format_minutes_to_time(
+                                 int(speed_up_training_string_vars[4].get()) * 480),
+                             "Speed_Up_Training_24h": format_minutes_to_time(
+                                 int(speed_up_training_string_vars[5].get()) * 1440),
+                             "Speed_Up_Training_3d": format_minutes_to_time(
+                                 int(speed_up_training_string_vars[6].get()) * 4320),
+
+                             "Speed_Up_Merging_1m": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[0].get()) * 1),
+                             "Speed_Up_Merging_15m": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[1].get()) * 15),
+                             "Speed_Up_Merging_60m": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[2].get()) * 60),
+                             "Speed_Up_Merging_3h": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[3].get()) * 180),
+                             "Speed_Up_Merging_8h": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[4].get()) * 480),
+                             "Speed_Up_Merging_15h": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[5].get()) * 900),
+                             "Speed_Up_Merging_24h": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[6].get()) * 1440),
+                             "Speed_Up_Merging_3d": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[7].get()) * 4320),
+                             "Speed_Up_Merging_7d": format_minutes_to_time(
+                                 int(speed_up_merging_string_vars[8].get()) * 10080)
+                             })
+        os.startfile(save_file_name)
+    except PermissionError:
+        if tkinter.messagebox.askretrycancel("Error writing to CSV file",
+                                             str(save_file_name) + " is already open. Close the file then retry."):
+            save_to_file(confirm_save=True)
 
 
 if __name__ == "__main__":
