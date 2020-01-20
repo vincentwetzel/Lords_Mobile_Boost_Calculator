@@ -816,7 +816,6 @@ class LordsMobileCalculator:
 
             output_df = pandas.DataFrame(OrderedDict((("Date/Time", pandas.Series(current_time)),
                                                       ("Notes", pandas.Series(self.save_notes_entry_string_var.get())),
-                                                      ("Notes", pandas.Series(self.save_notes_entry_string_var.get())),
                                                       ("Speed_Up_Total",
                                                        pandas.Series(self.results_string_vars[0].get())),
                                                       ("Speed_Up_Research_Total",
@@ -982,8 +981,8 @@ class LordsMobileCalculator:
                                                           int(self.speed_up_merging_string_vars[8].get()) * 10080)))
                                                       )))
 
-            main_df = main_df.append(output_df)
-            main_df.to_excel(save_file, encoding="utf-8", header=True, index=False, freeze_panes=(1,0))
+            main_df = main_df.append(output_df, sort=False)
+            main_df.to_excel(save_file, encoding="utf-8", header=True, index=False, freeze_panes=(1, 0))
 
             # Autosize the columns
             excel = Dispatch('Excel.Application')
