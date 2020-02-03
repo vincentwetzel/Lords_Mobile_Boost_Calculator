@@ -6,13 +6,12 @@ import tkinter
 import tkinter.ttk
 import tkinter.messagebox
 import tkinter.filedialog
-from datetime import datetime
-import csv
+from PIL import ImageTk, Image
 import os
+import pandas
+from datetime import datetime
 from typing import List
 from collections import OrderedDict
-from PIL import ImageTk, Image
-import pandas
 
 # NOTE TO USER: use logging.DEBUG for testing, logging.CRITICAL for runtime
 from win32com.client import Dispatch
@@ -29,8 +28,8 @@ class LordsMobileCalculator:
         self.root_tk = tkinter.Tk()  # constructor for TK object
         self.root_tk.title("Lords Mobile Boost Calculator by Vincent Wetzel")
         self.root_tk.geometry("700x800")
-        self.inputs_frame = tkinter.ttk.Frame(self.root_tk).grid()
-        self.results_frame = tkinter.ttk.Frame(self.root_tk).grid()
+        self.inputs_frame = tkinter.ttk.Frame(self.root_tk).grid(row=0, column=0)
+        self.results_frame = tkinter.ttk.Frame(self.root_tk).grid(row=1, column=0)
 
         self.results_string_vars: List[tkinter.StringVar] = list()
         """[0] = speed up
@@ -459,7 +458,7 @@ class LordsMobileCalculator:
         self.notebook.add(self.tk_frames[4], text="Training")
         self.notebook.add(self.tk_frames[5], text="Merging")
 
-        self.notebook.grid()
+        self.notebook.grid(row=0, column=0, sticky=tkinter.W, columnspan=5)
         self.notebook.enable_traversal()  # Allows CTRL + Tab
 
         for result_str in range(self.TABS_COUNT):
@@ -480,46 +479,46 @@ class LordsMobileCalculator:
 
         # Init Main Frame Results GUI
         tkinter.ttk.Label(self.results_frame, text="Speed Up Total:").grid(column=0, row=100, sticky='W',
-                                                                           columnspan=2)
+                                                                           columnspan=1)
         tkinter.ttk.Label(self.results_frame, text="Speed Up Research Total:").grid(column=0, row=101,
-                                                                                    sticky='W', columnspan=2)
+                                                                                    sticky='W', columnspan=1)
         tkinter.ttk.Label(self.results_frame, text="Speed Up Wall Repair Total:").grid(column=0, row=102, sticky='W',
-                                                                                       columnspan=2)
+                                                                                       columnspan=1)
         tkinter.ttk.Label(self.results_frame, text="Speed Up Healing Total:").grid(column=0, row=103, sticky='W',
-                                                                                   columnspan=2)
+                                                                                   columnspan=1)
 
         tkinter.ttk.Label(self.results_frame, text="Speed Up Training Total:").grid(column=0, row=104, sticky='W',
-                                                                                    columnspan=2)
+                                                                                    columnspan=1)
         tkinter.ttk.Label(self.results_frame, text="Speed Up Merging Total:").grid(column=0, row=105, sticky='W',
-                                                                                   columnspan=2)
-        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[0]).grid(column=2, row=100,
+                                                                                   columnspan=1)
+        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[0]).grid(column=1, row=100,
                                                                                              sticky=('W', 'E'),
-                                                                                             columnspan=2)
-        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[1]).grid(column=2, row=101,
+                                                                                             columnspan=1)
+        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[1]).grid(column=1, row=101,
                                                                                              sticky=('W', 'E'),
-                                                                                             columnspan=2)
-        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[2]).grid(column=2, row=102,
+                                                                                             columnspan=1)
+        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[2]).grid(column=1, row=102,
                                                                                              sticky=('W', 'E'),
-                                                                                             columnspan=2)
-        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[3]).grid(column=2, row=103,
+                                                                                             columnspan=1)
+        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[3]).grid(column=1, row=103,
                                                                                              sticky=('W', 'E'),
-                                                                                             columnspan=2)
-        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[4]).grid(column=2, row=104,
+                                                                                             columnspan=1)
+        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[4]).grid(column=1, row=104,
                                                                                              sticky=('W', 'E'),
-                                                                                             columnspan=2)
-        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[5]).grid(column=2, row=105,
+                                                                                             columnspan=1)
+        tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[5]).grid(column=1, row=105,
                                                                                              sticky=('W', 'E'),
-                                                                                             columnspan=2)
+                                                                                             columnspan=1)
 
         # Enter notes for this dataset
         tkinter.ttk.Label(self.results_frame, text="Notes:").grid(column=0, row=201, sticky='W', )
-        notes_entry = tkinter.ttk.Entry(self.results_frame, width=75,
+        notes_entry = tkinter.ttk.Entry(self.results_frame, width=45,
                                         textvariable=self.save_notes_entry_string_var)
-        notes_entry.grid(column=1, row=201, columnspan=4, sticky='W')
+        notes_entry.grid(column=1, row=201, columnspan=1, sticky='W')
 
         # Set Save button
         tkinter.ttk.Button(self.results_frame, text="Save to file", command=lambda: self.save_to_file()).grid(
-            column=5, row=201,
+            column=4, row=201,
             sticky='W')
 
         # Set the starting location of the typing cursor
@@ -770,235 +769,239 @@ class LordsMobileCalculator:
 
         self.update_totals()
 
-    def save_to_file(self, confirm_save=False):
+    def save_to_file(self):
         """
         Saves the data to an output file.
         :return:    None
         """
         save_file = None
         try:
-            save_file = open("settings.ini", 'r').readline().strip()
-        except FileNotFoundError:
-            save_file = ""
-
-        if not confirm_save:
+            save_file = open("settings.ini", 'r').readline().strip().split("save_file=")[1]
+        except (FileNotFoundError, IndexError):
+            save_file = tkinter.filedialog.asksaveasfilename(title="Save File", defaultextension='xlsx',
+                                                             filetypes=[("Excel Workbook", ".xlsx")])
             if save_file == "":
-                save_file = tkinter.filedialog.asksaveasfilename(title="Save File", defaultextension='csv',
-                                                                 filetypes=[("Excel Workbook", ".xlsx")])
-                with open('settings.ini', 'w') as settings_file:
-                    settings_file.write(save_file)
+                return
             else:
-                response = tkinter.messagebox.askyesnocancel(title="Save File",
-                                                             message="Would you like to save this file as: " +
-                                                                     save_file + "?")
-                if response:
-                    # "Yes" response, save the file to default value
-                    pass
-                if not response:
-                    # "No" response, rename file
-                    save_file = tkinter.filedialog.asksaveasfilename(title="Save File", defaultextension='xslx',
-                                                                     filetypes=[
-                                                                         ("Excel Workbook", ".xlsx")])
-                    with open('settings.ini', 'w') as settings_file:
-                        settings_file.write(save_file)
-                elif response is None:
-                    # Cancelled or dialogue window closed
+                print("save_file=" + str(save_file))
+                with open('settings.ini', 'w') as settings_file:
+                    settings_file.write("save_file=" + save_file)
+
+        # Confirm the save file name
+        while True:
+            save_confirm = tkinter.messagebox.askyesnocancel(title="Save File",
+                                                             message="Would you like to save this file as: "
+                                                                     + save_file + "?")
+            if save_confirm:
+                # "Yes" response, save the file to default value
+                break
+            elif not save_confirm:
+                # "No" response, rename file
+                save_file = tkinter.filedialog.asksaveasfilename(title="Save File", defaultextension='xslx',
+                                                                 filetypes=[
+                                                                     ("Excel Workbook", ".xlsx")])
+                with open('settings.ini', 'w') as settings_file:
+                    settings_file.write("save_file=" + save_file)
+            elif save_confirm is None:
+                # Cancelled or dialogue window closed
+                return
+
+        main_df = None
+        if os.path.exists(os.path.realpath(save_file)):
+            main_df = pandas.read_excel(save_file)
+        else:
+            main_df = pandas.DataFrame()
+
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        output_df = pandas.DataFrame(OrderedDict((("Date/Time", pandas.Series(current_time)),
+                                                  ("Notes", pandas.Series(self.save_notes_entry_string_var.get())),
+                                                  ("Speed_Up_Total",
+                                                   pandas.Series(self.results_string_vars[0].get())),
+                                                  ("Speed_Up_Research_Total",
+                                                   pandas.Series(self.results_string_vars[1].get())),
+                                                  ("Speed_Up_Wall_Repair_Total",
+                                                   pandas.Series(self.results_string_vars[2].get())),
+                                                  ("Speed_Up_Healing_Total",
+                                                   pandas.Series(self.results_string_vars[3].get())),
+                                                  ("Speed_Up_Training_Total",
+                                                   pandas.Series(self.results_string_vars[4].get())),
+                                                  ("Speed_Up_Merging_Total",
+                                                   pandas.Series(self.results_string_vars[5].get())),
+
+                                                  ("Speed_Up_1m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[0].get()) * 1))),
+                                                  ("Speed_Up_3m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[1].get()) * 3))),
+                                                  ("Speed_Up_5m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[2].get()) * 5))),
+                                                  ("Speed_Up_10m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[3].get()) * 10))),
+                                                  ("Speed_Up_15m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[4].get()) * 15))),
+                                                  ("Speed_Up_30m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[5].get()) * 30))),
+                                                  ("Speed_Up_60m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[6].get()) * 60))),
+                                                  ("Speed_Up_3h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[7].get()) * 180))),
+                                                  ("Speed_Up_8h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[8].get()) * 480))),
+                                                  ("Speed_Up_15h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[9].get()) * 900))),
+                                                  ("Speed_Up_24h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[10].get()) * 1440))),
+                                                  ("Speed_Up_3d", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[11].get()) * 4320))),
+                                                  ("Speed_Up_7d", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[12].get()) * 10080))),
+                                                  ("Speed_Up_30d", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_string_vars[13].get()) * 43200))),
+
+                                                  (
+                                                      "Speed_Up_Research_5m",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_research_string_vars[0].get()) * 5))),
+                                                  ("Speed_Up_Research_10m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_research_string_vars[1].get()) * 10))),
+                                                  ("Speed_Up_Research_15m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_research_string_vars[2].get()) * 15))),
+                                                  ("Speed_Up_Research_30m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_research_string_vars[3].get()) * 30))),
+                                                  ("Speed_Up_Research_60m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_research_string_vars[4].get()) * 60))),
+                                                  (
+                                                      "Speed_Up_Research_3h",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_research_string_vars[5].get()) * 180))),
+                                                  (
+                                                      "Speed_Up_Research_8h",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_research_string_vars[6].get()) * 480))),
+                                                  ("Speed_Up_Research_15h",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_research_string_vars[7].get()) * 900))),
+                                                  ("Speed_Up_Research_24h",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_research_string_vars[8].get()) * 1440))),
+                                                  (
+                                                      "Speed_Up_Research_3d",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_research_string_vars[
+                                                                  9].get()) * 4320))),
+
+                                                  ("Speed_Up_Wall_Repair_15m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_wall_repair_string_vars[0].get()) * 15))),
+                                                  ("Speed_Up_Wall_Repair_60m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_wall_repair_string_vars[1].get()) * 60))),
+                                                  ("Speed_Up_Wall_Repair_3h",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_wall_repair_string_vars[2].get()) * 180))),
+                                                  ("Speed_Up_Wall_Repair_8h",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_wall_repair_string_vars[3].get()) * 480))),
+                                                  ("Speed_Up_Wall_Repair_24h",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_wall_repair_string_vars[
+                                                               4].get()) * 1440))),
+
+                                                  (
+                                                      "Speed_Up_Healing_15m",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_healing_string_vars[0].get()) * 15))),
+                                                  (
+                                                      "Speed_Up_Healing_60m",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_healing_string_vars[1].get()) * 60))),
+                                                  ("Speed_Up_Healing_3h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_healing_string_vars[2].get()) * 180))),
+                                                  ("Speed_Up_Healing_8h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_healing_string_vars[3].get()) * 480))),
+
+                                                  ("Speed_Up_Training_10m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_training_string_vars[0].get()) * 10))),
+                                                  ("Speed_Up_Training_30m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_training_string_vars[1].get()) * 30))),
+                                                  ("Speed_Up_Training_60m",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_training_string_vars[2].get()) * 60))),
+                                                  (
+                                                      "Speed_Up_Training_3h",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_training_string_vars[3].get()) * 180))),
+                                                  (
+                                                      "Speed_Up_Training_8h",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_training_string_vars[4].get()) * 480))),
+                                                  ("Speed_Up_Training_15h",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_training_string_vars[4].get()) * 900))),
+                                                  ("Speed_Up_Training_24h",
+                                                   pandas.Series(self.format_minutes_to_time(
+                                                       int(self.speed_up_training_string_vars[5].get()) * 1440))),
+                                                  (
+                                                      "Speed_Up_Training_3d",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_training_string_vars[
+                                                                  6].get()) * 4320))),
+
+                                                  ("Speed_Up_Merging_1m", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_merging_string_vars[0].get()) * 1))),
+                                                  (
+                                                      "Speed_Up_Merging_15m",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_merging_string_vars[1].get()) * 15))),
+                                                  (
+                                                      "Speed_Up_Merging_60m",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_merging_string_vars[2].get()) * 60))),
+                                                  ("Speed_Up_Merging_3h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_merging_string_vars[3].get()) * 180))),
+                                                  ("Speed_Up_Merging_8h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_merging_string_vars[4].get()) * 480))),
+                                                  (
+                                                      "Speed_Up_Merging_15h",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_merging_string_vars[5].get()) * 900))),
+                                                  (
+                                                      "Speed_Up_Merging_24h",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_merging_string_vars[6].get()) * 1440))),
+                                                  ("Speed_Up_Merging_3d", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_merging_string_vars[7].get()) * 4320))),
+                                                  ("Speed_Up_Merging_7d", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_merging_string_vars[8].get()) * 10080)))
+                                                  )))
+
+        # Merge the new data into the existing dataframe that olds all my old data
+        main_df = main_df.append(output_df, sort=False)
+        while True:
+            try:
+                main_df.to_excel(save_file, encoding="utf-8", header=True, index=False, freeze_panes=(1, 0))
+                break
+            except PermissionError:
+                if not tkinter.messagebox.askretrycancel("Error writing to Excel file", str(
+                        save_file) + " is already open. Close the file then retry."):
                     return
 
-        try:
-            main_df = None
-            if os.path.exists(os.path.realpath(save_file)):
-                main_df = pandas.read_excel(save_file)
-            else:
-                main_df = pandas.DataFrame()
+        # Autosize the columns of the output file
+        excel = Dispatch('Excel.Application')
+        wb = excel.Workbooks.Open(save_file)
+        excel.Worksheets(1).Activate()
+        excel.ActiveSheet.Columns.AutoFit()
+        wb.Save()
+        wb.Close()
 
-            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-            output_df = pandas.DataFrame(OrderedDict((("Date/Time", pandas.Series(current_time)),
-                                                      ("Notes", pandas.Series(self.save_notes_entry_string_var.get())),
-                                                      ("Speed_Up_Total",
-                                                       pandas.Series(self.results_string_vars[0].get())),
-                                                      ("Speed_Up_Research_Total",
-                                                       pandas.Series(self.results_string_vars[1].get())),
-                                                      ("Speed_Up_Wall_Repair_Total",
-                                                       pandas.Series(self.results_string_vars[2].get())),
-                                                      ("Speed_Up_Healing_Total",
-                                                       pandas.Series(self.results_string_vars[3].get())),
-                                                      ("Speed_Up_Training_Total",
-                                                       pandas.Series(self.results_string_vars[4].get())),
-                                                      ("Speed_Up_Merging_Total",
-                                                       pandas.Series(self.results_string_vars[5].get())),
-
-                                                      ("Speed_Up_1m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[0].get()) * 1))),
-                                                      ("Speed_Up_3m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[1].get()) * 3))),
-                                                      ("Speed_Up_5m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[2].get()) * 5))),
-                                                      ("Speed_Up_10m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[3].get()) * 10))),
-                                                      ("Speed_Up_15m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[4].get()) * 15))),
-                                                      ("Speed_Up_30m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[5].get()) * 30))),
-                                                      ("Speed_Up_60m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[6].get()) * 60))),
-                                                      ("Speed_Up_3h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[7].get()) * 180))),
-                                                      ("Speed_Up_8h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[8].get()) * 480))),
-                                                      ("Speed_Up_15h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[9].get()) * 900))),
-                                                      ("Speed_Up_24h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[10].get()) * 1440))),
-                                                      ("Speed_Up_3d", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[11].get()) * 4320))),
-                                                      ("Speed_Up_7d", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[12].get()) * 10080))),
-                                                      ("Speed_Up_30d", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_string_vars[13].get()) * 43200))),
-
-                                                      (
-                                                          "Speed_Up_Research_5m",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_research_string_vars[0].get()) * 5))),
-                                                      ("Speed_Up_Research_10m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_research_string_vars[1].get()) * 10))),
-                                                      ("Speed_Up_Research_15m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_research_string_vars[2].get()) * 15))),
-                                                      ("Speed_Up_Research_30m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_research_string_vars[3].get()) * 30))),
-                                                      ("Speed_Up_Research_60m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_research_string_vars[4].get()) * 60))),
-                                                      (
-                                                          "Speed_Up_Research_3h",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_research_string_vars[5].get()) * 180))),
-                                                      (
-                                                          "Speed_Up_Research_8h",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_research_string_vars[6].get()) * 480))),
-                                                      ("Speed_Up_Research_15h",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_research_string_vars[7].get()) * 900))),
-                                                      ("Speed_Up_Research_24h",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_research_string_vars[8].get()) * 1440))),
-                                                      (
-                                                          "Speed_Up_Research_3d",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_research_string_vars[
-                                                                      9].get()) * 4320))),
-
-                                                      ("Speed_Up_Wall_Repair_15m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_wall_repair_string_vars[0].get()) * 15))),
-                                                      ("Speed_Up_Wall_Repair_60m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_wall_repair_string_vars[1].get()) * 60))),
-                                                      ("Speed_Up_Wall_Repair_3h",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_wall_repair_string_vars[2].get()) * 180))),
-                                                      ("Speed_Up_Wall_Repair_8h",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_wall_repair_string_vars[3].get()) * 480))),
-                                                      ("Speed_Up_Wall_Repair_24h",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_wall_repair_string_vars[
-                                                                   4].get()) * 1440))),
-
-                                                      (
-                                                          "Speed_Up_Healing_15m",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_healing_string_vars[0].get()) * 15))),
-                                                      (
-                                                          "Speed_Up_Healing_60m",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_healing_string_vars[1].get()) * 60))),
-                                                      ("Speed_Up_Healing_3h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_healing_string_vars[2].get()) * 180))),
-                                                      ("Speed_Up_Healing_8h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_healing_string_vars[3].get()) * 480))),
-
-                                                      ("Speed_Up_Training_10m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_training_string_vars[0].get()) * 10))),
-                                                      ("Speed_Up_Training_30m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_training_string_vars[1].get()) * 30))),
-                                                      ("Speed_Up_Training_60m",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_training_string_vars[2].get()) * 60))),
-                                                      (
-                                                          "Speed_Up_Training_3h",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_training_string_vars[3].get()) * 180))),
-                                                      (
-                                                          "Speed_Up_Training_8h",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_training_string_vars[4].get()) * 480))),
-                                                      ("Speed_Up_Training_15h",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_training_string_vars[4].get()) * 900))),
-                                                      ("Speed_Up_Training_24h",
-                                                       pandas.Series(self.format_minutes_to_time(
-                                                           int(self.speed_up_training_string_vars[5].get()) * 1440))),
-                                                      (
-                                                          "Speed_Up_Training_3d",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_training_string_vars[
-                                                                      6].get()) * 4320))),
-
-                                                      ("Speed_Up_Merging_1m", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_merging_string_vars[0].get()) * 1))),
-                                                      (
-                                                          "Speed_Up_Merging_15m",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_merging_string_vars[1].get()) * 15))),
-                                                      (
-                                                          "Speed_Up_Merging_60m",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_merging_string_vars[2].get()) * 60))),
-                                                      ("Speed_Up_Merging_3h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_merging_string_vars[3].get()) * 180))),
-                                                      ("Speed_Up_Merging_8h", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_merging_string_vars[4].get()) * 480))),
-                                                      (
-                                                          "Speed_Up_Merging_15h",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_merging_string_vars[5].get()) * 900))),
-                                                      (
-                                                          "Speed_Up_Merging_24h",
-                                                          pandas.Series(self.format_minutes_to_time(
-                                                              int(self.speed_up_merging_string_vars[6].get()) * 1440))),
-                                                      ("Speed_Up_Merging_3d", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_merging_string_vars[7].get()) * 4320))),
-                                                      ("Speed_Up_Merging_7d", pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_merging_string_vars[8].get()) * 10080)))
-                                                      )))
-
-            main_df = main_df.append(output_df, sort=False)
-            main_df.to_excel(save_file, encoding="utf-8", header=True, index=False, freeze_panes=(1, 0))
-
-            # Autosize the columns
-            excel = Dispatch('Excel.Application')
-            wb = excel.Workbooks.Open(save_file)
-            excel.Worksheets(1).Activate()
-            excel.ActiveSheet.Columns.AutoFit()
-            wb.Save()
-            wb.Close()
-
-            # Write to outfile
-            os.startfile(save_file)
-
-        except PermissionError:
-            if tkinter.messagebox.askretrycancel("Error writing to Excel file",
-                                                 str(save_file) + " is already open. Close the file then retry."):
-                self.save_to_file(confirm_save=True)
+        # Open the output file
+        os.startfile(save_file)
 
 
 if __name__ == "__main__":
