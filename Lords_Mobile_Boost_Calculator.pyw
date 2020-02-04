@@ -12,8 +12,6 @@ import pandas
 from datetime import datetime
 from typing import List
 from collections import OrderedDict
-
-# NOTE TO USER: use logging.DEBUG for testing, logging.CRITICAL for runtime
 from win32com.client import Dispatch
 
 logging.basicConfig(stream=sys.stderr,
@@ -28,6 +26,7 @@ class LordsMobileCalculator:
         self.root_tk = tkinter.Tk()  # constructor for TK object
         self.root_tk.title("Lords Mobile Boost Calculator by Vincent Wetzel")
         self.root_tk.geometry("700x800")
+        self.root_tk.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.inputs_frame = tkinter.ttk.Frame(self.root_tk).grid(row=0, column=0)
         self.results_frame = tkinter.ttk.Frame(self.root_tk).grid(row=1, column=0)
 
@@ -774,6 +773,7 @@ class LordsMobileCalculator:
         Saves the data to an output file.
         :return:    None
         """
+        # Init save file
         save_file = None
         try:
             save_file = open("settings.ini", 'r').readline().strip().split("save_file=")[1]
@@ -1002,6 +1002,10 @@ class LordsMobileCalculator:
 
         # Open the output file
         os.startfile(save_file)
+
+    def on_closing(self):
+        if tkinter.messagebox.askokcancel("Quit", "Do you want to quit?"):
+            self.root_tk.destroy()
 
 
 if __name__ == "__main__":
