@@ -14,7 +14,10 @@ from typing import List
 from collections import OrderedDict
 
 # NOTE TO USER: use logging.DEBUG for testing, logging.CRITICAL for runtime
-from win32com.client import Dispatch
+from sys import platform
+
+if platform == "win32":
+    from win32com.client import Dispatch
 
 logging.basicConfig(stream=sys.stderr,
                     level=logging.CRITICAL)
@@ -96,10 +99,11 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_string_vars: List[tkinter.StringVar] = list()
         """
-        [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [0] = 5m,
+        [1] = 15m
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
         """
 
         self.speed_up_training_string_vars: List[tkinter.StringVar] = list()
@@ -170,10 +174,11 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_entries: List[tkinter.Entry] = list()
         """
-        [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [0] = 5m,
+        [1] = 15m
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
         """
 
         self.speed_up_training_entries: List[tkinter.Entry] = list()
@@ -244,10 +249,11 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_labels: List[tkinter.Label] = list()
         """
-        [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [0] = 5m,
+        [1] = 15m
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
         """
 
         self.speed_up_training_labels: List[tkinter.Label] = list()
@@ -318,10 +324,11 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_tk_images: List[tkinter.PhotoImage] = list()
         """
-        [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [0] = 5m,
+        [1] = 15m
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
         """
 
         self.speed_up_training_tk_images: List[tkinter.PhotoImage] = list()
@@ -387,6 +394,7 @@ class LordsMobileCalculator:
         ]
 
         self.speed_up_healing_image_locations: List[str] = [
+            "assets/speed_up_healing/speed_up_healing_5m.png",
             "assets/speed_up_healing/speed_up_healing_15m.png",
             "assets/speed_up_healing/speed_up_healing_60m.png",
             "assets/speed_up_healing/speed_up_healing_3h.png",
@@ -407,7 +415,7 @@ class LordsMobileCalculator:
         self.SPEED_UP_ITEMS_COUNT: int = 14
         self.SPEED_UP_RESEARCH_ITEMS_COUNT: int = 10
         self.SPEED_UP_WALL_REPAIR_COUNT: int = 5
-        self.SPEED_UP_HEALING_COUNT: int = 4
+        self.SPEED_UP_HEALING_COUNT: int = 5
         self.SPEED_UP_TRAINING_COUNT: int = 8
         self.SPEED_UP_MERGING_ITEMS_COUNT: int = 9
 
@@ -676,6 +684,7 @@ class LordsMobileCalculator:
             self.results_string_vars[2].set(self.format_minutes_to_time(speed_up_wall_repair_total))
 
             speed_up_healing_total = 0
+            speed_up_healing_total += 5 * int(self.speed_up_healing_string_vars[0].get())
             speed_up_healing_total += 15 * int(self.speed_up_healing_string_vars[0].get())
             speed_up_healing_total += 60 * int(self.speed_up_healing_string_vars[1].get())
             speed_up_healing_total += 180 * int(self.speed_up_healing_string_vars[2].get())
@@ -910,6 +919,10 @@ class LordsMobileCalculator:
                                                    pandas.Series(self.format_minutes_to_time(
                                                        int(self.speed_up_wall_repair_string_vars[
                                                                4].get()) * 1440))),
+                                                  (
+                                                      "Speed_Up_Healing_5m",
+                                                      pandas.Series(self.format_minutes_to_time(
+                                                          int(self.speed_up_healing_string_vars[0].get()) * 15))),
 
                                                   (
                                                       "Speed_Up_Healing_15m",
@@ -993,12 +1006,13 @@ class LordsMobileCalculator:
                     return
 
         # Autosize the columns of the output file
-        excel = Dispatch('Excel.Application')
-        wb = excel.Workbooks.Open(save_file)
-        excel.Worksheets(1).Activate()
-        excel.ActiveSheet.Columns.AutoFit()
-        wb.Save()
-        wb.Close()
+        if platform == "win32":
+            excel = Dispatch('Excel.Application')
+            wb = excel.Workbooks.Open(save_file)
+            excel.Worksheets(1).Activate()
+            excel.ActiveSheet.Columns.AutoFit()
+            wb.Save()
+            wb.Close()
 
         # Open the output file
         os.startfile(save_file)
