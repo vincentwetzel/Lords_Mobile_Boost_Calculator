@@ -31,6 +31,7 @@ class LordsMobileCalculator:
         self.root_tk = tkinter.Tk()  # constructor for TK object
         self.root_tk.title("Lords Mobile Boost Calculator by Vincent Wetzel")
         self.root_tk.geometry("700x800")
+        self.root_tk.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.inputs_frame = tkinter.ttk.Frame(self.root_tk).grid(row=0, column=0)
         self.results_frame = tkinter.ttk.Frame(self.root_tk).grid(row=1, column=0)
 
@@ -99,11 +100,10 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_string_vars: List[tkinter.StringVar] = list()
         """
-        [0] = 5m,
-        [1] = 15m
-        [2] = 60m,
-        [3] = 3h,
-        [4] = 8h,
+        [0] = 15m
+        [1] = 60m,
+        [2] = 3h,
+        [3] = 8h,
         """
 
         self.speed_up_training_string_vars: List[tkinter.StringVar] = list()
@@ -174,11 +174,10 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_entries: List[tkinter.Entry] = list()
         """
-        [0] = 5m,
-        [1] = 15m
-        [2] = 60m,
-        [3] = 3h,
-        [4] = 8h,
+        [0] = 15m
+        [1] = 60m,
+        [2] = 3h,
+        [3] = 8h,
         """
 
         self.speed_up_training_entries: List[tkinter.Entry] = list()
@@ -249,11 +248,10 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_labels: List[tkinter.Label] = list()
         """
-        [0] = 5m,
-        [1] = 15m
-        [2] = 60m,
-        [3] = 3h,
-        [4] = 8h,
+        [0] = 15m
+        [1] = 60m,
+        [2] = 3h,
+        [3] = 8h,
         """
 
         self.speed_up_training_labels: List[tkinter.Label] = list()
@@ -324,11 +322,10 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_tk_images: List[tkinter.PhotoImage] = list()
         """
-        [0] = 5m,
-        [1] = 15m
-        [2] = 60m,
-        [3] = 3h,
-        [4] = 8h,
+        [0] = 15m
+        [1] = 60m,
+        [2] = 3h,
+        [3] = 8h,
         """
 
         self.speed_up_training_tk_images: List[tkinter.PhotoImage] = list()
@@ -415,7 +412,7 @@ class LordsMobileCalculator:
         self.SPEED_UP_ITEMS_COUNT: int = 14
         self.SPEED_UP_RESEARCH_ITEMS_COUNT: int = 10
         self.SPEED_UP_WALL_REPAIR_COUNT: int = 5
-        self.SPEED_UP_HEALING_COUNT: int = 5
+        self.SPEED_UP_HEALING_COUNT: int = 4
         self.SPEED_UP_TRAINING_COUNT: int = 8
         self.SPEED_UP_MERGING_ITEMS_COUNT: int = 9
 
@@ -783,6 +780,7 @@ class LordsMobileCalculator:
         Saves the data to an output file.
         :return:    None
         """
+        # Init save file
         save_file = None
         try:
             save_file = open("settings.ini", 'r').readline().strip().split("save_file=")[1]
@@ -956,15 +954,15 @@ class LordsMobileCalculator:
                                                           int(self.speed_up_training_string_vars[4].get()) * 480))),
                                                   ("Speed_Up_Training_15h",
                                                    pandas.Series(self.format_minutes_to_time(
-                                                       int(self.speed_up_training_string_vars[5].get()) * 900))),
+                                                       int(self.speed_up_training_string_vars[4].get()) * 900))),
                                                   ("Speed_Up_Training_24h",
                                                    pandas.Series(self.format_minutes_to_time(
-                                                       int(self.speed_up_training_string_vars[6].get()) * 1440))),
+                                                       int(self.speed_up_training_string_vars[5].get()) * 1440))),
                                                   (
                                                       "Speed_Up_Training_3d",
                                                       pandas.Series(self.format_minutes_to_time(
                                                           int(self.speed_up_training_string_vars[
-                                                                  7].get()) * 4320))),
+                                                                  6].get()) * 4320))),
 
                                                   ("Speed_Up_Merging_1m", pandas.Series(self.format_minutes_to_time(
                                                       int(self.speed_up_merging_string_vars[0].get()) * 1))),
@@ -1006,16 +1004,19 @@ class LordsMobileCalculator:
                     return
 
         # Autosize the columns of the output file
-        if platform == "win32":
-            excel = Dispatch('Excel.Application')
-            wb = excel.Workbooks.Open(save_file)
-            excel.Worksheets(1).Activate()
-            excel.ActiveSheet.Columns.AutoFit()
-            wb.Save()
-            wb.Close()
+        excel = Dispatch('Excel.Application')
+        wb = excel.Workbooks.Open(save_file)
+        excel.Worksheets(1).Activate()
+        excel.ActiveSheet.Columns.AutoFit()
+        wb.Save()
+        wb.Close()
 
         # Open the output file
         os.startfile(save_file)
+
+    def on_closing(self):
+        if tkinter.messagebox.askokcancel("Quit", "Do you want to quit?"):
+            self.root_tk.destroy()
 
 
 if __name__ == "__main__":
