@@ -5,5 +5,5 @@
 CD /D %~dp0
 start pythonw %~dp0\Lords_Mobile_Boost_Calculator.pyw
 
-::pause
+:: pause
 exit
