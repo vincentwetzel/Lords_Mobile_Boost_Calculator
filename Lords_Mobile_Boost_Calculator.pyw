@@ -954,15 +954,15 @@ class LordsMobileCalculator:
                                                           int(self.speed_up_training_string_vars[4].get()) * 480))),
                                                   ("Speed_Up_Training_15h",
                                                    pandas.Series(self.format_minutes_to_time(
-                                                       int(self.speed_up_training_string_vars[4].get()) * 900))),
+                                                       int(self.speed_up_training_string_vars[5].get()) * 900))),
                                                   ("Speed_Up_Training_24h",
                                                    pandas.Series(self.format_minutes_to_time(
-                                                       int(self.speed_up_training_string_vars[5].get()) * 1440))),
+                                                       int(self.speed_up_training_string_vars[6].get()) * 1440))),
                                                   (
                                                       "Speed_Up_Training_3d",
                                                       pandas.Series(self.format_minutes_to_time(
                                                           int(self.speed_up_training_string_vars[
-                                                                  6].get()) * 4320))),
+                                                                  7].get()) * 4320))),
 
                                                   ("Speed_Up_Merging_1m", pandas.Series(self.format_minutes_to_time(
                                                       int(self.speed_up_merging_string_vars[0].get()) * 1))),
