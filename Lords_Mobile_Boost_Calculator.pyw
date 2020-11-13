@@ -100,10 +100,12 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_string_vars: List[tkinter.StringVar] = list()
         """
-        [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [0] = 5m
+        [1] = 15m
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
+        [5] = 24h,
         """
 
         self.speed_up_training_string_vars: List[tkinter.StringVar] = list()
@@ -174,10 +176,12 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_entries: List[tkinter.Entry] = list()
         """
-        [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [0] = 5m
+        [1] = 15m,
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
+        [5] = 24h
         """
 
         self.speed_up_training_entries: List[tkinter.Entry] = list()
@@ -249,9 +253,11 @@ class LordsMobileCalculator:
         self.speed_up_healing_labels: List[tkinter.Label] = list()
         """
         [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [1] = 15m,
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
+        [5] = 24h
         """
 
         self.speed_up_training_labels: List[tkinter.Label] = list()
@@ -322,10 +328,12 @@ class LordsMobileCalculator:
 
         self.speed_up_healing_tk_images: List[tkinter.PhotoImage] = list()
         """
-        [0] = 15m
-        [1] = 60m,
-        [2] = 3h,
-        [3] = 8h,
+        [0] = 15m,
+        [1] = 15m,
+        [2] = 60m,
+        [3] = 3h,
+        [4] = 8h,
+        [5] = 24h
         """
 
         self.speed_up_training_tk_images: List[tkinter.PhotoImage] = list()
@@ -395,7 +403,8 @@ class LordsMobileCalculator:
             "assets/speed_up_healing/speed_up_healing_15m.png",
             "assets/speed_up_healing/speed_up_healing_60m.png",
             "assets/speed_up_healing/speed_up_healing_3h.png",
-            "assets/speed_up_healing/speed_up_healing_8h.png"
+            "assets/speed_up_healing/speed_up_healing_8h.png",
+            "assets/speed_up_healing/speed_up_healing_24h.png"
         ]
 
         self.speed_up_training_image_locations: List[str] = [
@@ -412,7 +421,7 @@ class LordsMobileCalculator:
         self.SPEED_UP_ITEMS_COUNT: int = 14
         self.SPEED_UP_RESEARCH_ITEMS_COUNT: int = 10
         self.SPEED_UP_WALL_REPAIR_COUNT: int = 5
-        self.SPEED_UP_HEALING_COUNT: int = 4
+        self.SPEED_UP_HEALING_COUNT: int = 6
         self.SPEED_UP_TRAINING_COUNT: int = 8
         self.SPEED_UP_MERGING_ITEMS_COUNT: int = 9
 
@@ -682,10 +691,11 @@ class LordsMobileCalculator:
 
             speed_up_healing_total = 0
             speed_up_healing_total += 5 * int(self.speed_up_healing_string_vars[0].get())
-            speed_up_healing_total += 15 * int(self.speed_up_healing_string_vars[0].get())
-            speed_up_healing_total += 60 * int(self.speed_up_healing_string_vars[1].get())
-            speed_up_healing_total += 180 * int(self.speed_up_healing_string_vars[2].get())
-            speed_up_healing_total += 480 * int(self.speed_up_healing_string_vars[3].get())
+            speed_up_healing_total += 15 * int(self.speed_up_healing_string_vars[1].get())
+            speed_up_healing_total += 60 * int(self.speed_up_healing_string_vars[2].get())
+            speed_up_healing_total += 180 * int(self.speed_up_healing_string_vars[3].get())
+            speed_up_healing_total += 480 * int(self.speed_up_healing_string_vars[4].get())
+            speed_up_healing_total += 1440 * int(self.speed_up_healing_string_vars[5].get())
             self.results_string_vars[3].set(self.format_minutes_to_time(speed_up_healing_total))
 
             speed_up_training_total = 0
@@ -925,15 +935,17 @@ class LordsMobileCalculator:
                                                   (
                                                       "Speed_Up_Healing_15m",
                                                       pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_healing_string_vars[0].get()) * 15))),
+                                                          int(self.speed_up_healing_string_vars[1].get()) * 15))),
                                                   (
                                                       "Speed_Up_Healing_60m",
                                                       pandas.Series(self.format_minutes_to_time(
-                                                          int(self.speed_up_healing_string_vars[1].get()) * 60))),
+                                                          int(self.speed_up_healing_string_vars[2].get()) * 60))),
                                                   ("Speed_Up_Healing_3h", pandas.Series(self.format_minutes_to_time(
-                                                      int(self.speed_up_healing_string_vars[2].get()) * 180))),
+                                                      int(self.speed_up_healing_string_vars[3].get()) * 180))),
                                                   ("Speed_Up_Healing_8h", pandas.Series(self.format_minutes_to_time(
-                                                      int(self.speed_up_healing_string_vars[3].get()) * 480))),
+                                                      int(self.speed_up_healing_string_vars[4].get()) * 480))),
+                                                  ("Speed_Up_Healing_24h", pandas.Series(self.format_minutes_to_time(
+                                                      int(self.speed_up_healing_string_vars[5].get()) * 1440))),
 
                                                   ("Speed_Up_Training_10m",
                                                    pandas.Series(self.format_minutes_to_time(
