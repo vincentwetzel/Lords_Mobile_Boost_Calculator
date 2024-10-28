@@ -766,23 +766,23 @@ class LordsMobileCalculator:
         self.update_totals()
 
     def reset_all_values(self):
-        for x in range(len(self.speed_up_string_vars)):
-            self.speed_up_string_vars[x].set(0)
+        for i in range(len(self.speed_up_string_vars)):
+            self.speed_up_string_vars[i].set(0)
 
-        for x in range(len(self.speed_up_research_string_vars)):
-            self.speed_up_research_string_vars[x].set(0)
+        for i in range(len(self.speed_up_research_string_vars)):
+            self.speed_up_research_string_vars[i].set(0)
 
-        for x in range(len(self.speed_up_wall_repair_string_vars)):
-            self.speed_up_wall_repair_string_vars[x].set(0)
+        for i in range(len(self.speed_up_wall_repair_string_vars)):
+            self.speed_up_wall_repair_string_vars[i].set(0)
 
-        for x in range(len(self.speed_up_healing_string_vars)):
-            self.speed_up_healing_string_vars[x].set(0)
+        for i in range(len(self.speed_up_healing_string_vars)):
+            self.speed_up_healing_string_vars[i].set(0)
 
-        for x in range(len(self.speed_up_training_string_vars)):
-            self.speed_up_training_string_vars[x].set(0)
+        for i in range(len(self.speed_up_training_string_vars)):
+            self.speed_up_training_string_vars[i].set(0)
 
-        for x in range(len(self.speed_up_merging_string_vars)):
-            self.speed_up_merging_string_vars[x].set(0)
+        for i in range(len(self.speed_up_merging_string_vars)):
+            self.speed_up_merging_string_vars[i].set(0)
 
         self.update_totals()
 
