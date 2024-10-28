@@ -570,7 +570,8 @@ class LordsMobileCalculator:
         for label_counter in range(counters_param):
             # Open then resize the image object
             image = Image.open(image_locations_list[label_counter])
-            image = image.resize((self.IMG_SCALE, self.IMG_SCALE), Image.ANTIALIAS)
+            image = image.resize((self.IMG_SCALE, self.IMG_SCALE), Image.Resampling.LANCZOS)
+            tk_images_list.append(ImageTk.PhotoImage(image))
             tk_images_list.append(ImageTk.PhotoImage(image))
 
             # Create a Label and display the image in the grid
