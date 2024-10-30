@@ -20,7 +20,7 @@ if platform == "win32":
     from win32com.client import Dispatch
 
 logging.basicConfig(stream=sys.stderr,
-                    level=logging.CRITICAL)
+                    level=logging.DEBUG)
 
 
 class LordsMobileCalculator:
@@ -506,22 +506,22 @@ class LordsMobileCalculator:
         tkinter.ttk.Label(self.results_frame, text="Speed Up Merging Total:").grid(column=0, row=105, sticky='W',
                                                                                    columnspan=1)
         tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[0]).grid(column=1, row=100,
-                                                                                             sticky=('W', 'E'),
+                                                                                             sticky='WE',
                                                                                              columnspan=1)
         tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[1]).grid(column=1, row=101,
-                                                                                             sticky=('W', 'E'),
+                                                                                             sticky='WE',
                                                                                              columnspan=1)
         tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[2]).grid(column=1, row=102,
-                                                                                             sticky=('W', 'E'),
+                                                                                             sticky='WE',
                                                                                              columnspan=1)
         tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[3]).grid(column=1, row=103,
-                                                                                             sticky=('W', 'E'),
+                                                                                             sticky='WE',
                                                                                              columnspan=1)
         tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[4]).grid(column=1, row=104,
-                                                                                             sticky=('W', 'E'),
+                                                                                             sticky='WE',
                                                                                              columnspan=1)
         tkinter.ttk.Label(self.results_frame, textvariable=self.results_string_vars[5]).grid(column=1, row=105,
-                                                                                             sticky=('W', 'E'),
+                                                                                             sticky='WE',
                                                                                              columnspan=1)
 
         # Enter notes for this dataset
@@ -570,8 +570,9 @@ class LordsMobileCalculator:
         for label_counter in range(counters_param):
             # Open then resize the image object
             image = Image.open(image_locations_list[label_counter])
+            logging.debug("label_counter: " + str(label_counter))
+            logging.debug(image_locations_list[label_counter])
             image = image.resize((self.IMG_SCALE, self.IMG_SCALE), Image.Resampling.LANCZOS)
-            tk_images_list.append(ImageTk.PhotoImage(image))
             tk_images_list.append(ImageTk.PhotoImage(image))
 
             # Create a Label and display the image in the grid
@@ -585,7 +586,7 @@ class LordsMobileCalculator:
 
         # Init Entries
         for entry_counter in range(counters_param):
-            string_vars_list.append(tkinter.StringVar(value=0))
+            string_vars_list.append(tkinter.StringVar(value="0"))
             entries_list.append(
                 tkinter.ttk.Entry(current_frame, width=4, textvariable=string_vars_list[entry_counter]))
             entries_list[entry_counter].grid(column=1 if (entry_counter < counters_param / 2) else 3,
@@ -761,28 +762,28 @@ class LordsMobileCalculator:
         """
 
         for i in range(self.counter_constants_list[frame_number]):
-            self.string_vars[frame_number][i].set(0)
+            self.string_vars[frame_number][i].set("0")
 
         self.update_totals()
 
     def reset_all_values(self):
         for i in range(len(self.speed_up_string_vars)):
-            self.speed_up_string_vars[i].set(0)
+            self.speed_up_string_vars[i].set("0")
 
         for i in range(len(self.speed_up_research_string_vars)):
-            self.speed_up_research_string_vars[i].set(0)
+            self.speed_up_research_string_vars[i].set("0")
 
         for i in range(len(self.speed_up_wall_repair_string_vars)):
-            self.speed_up_wall_repair_string_vars[i].set(0)
+            self.speed_up_wall_repair_string_vars[i].set("0")
 
         for i in range(len(self.speed_up_healing_string_vars)):
-            self.speed_up_healing_string_vars[i].set(0)
+            self.speed_up_healing_string_vars[i].set("0")
 
         for i in range(len(self.speed_up_training_string_vars)):
-            self.speed_up_training_string_vars[i].set(0)
+            self.speed_up_training_string_vars[i].set("0")
 
         for i in range(len(self.speed_up_merging_string_vars)):
-            self.speed_up_merging_string_vars[i].set(0)
+            self.speed_up_merging_string_vars[i].set("0")
 
         self.update_totals()
 
@@ -824,7 +825,7 @@ class LordsMobileCalculator:
                 # Cancelled or dialogue window closed
                 return
 
-        main_df = None
+        main_df: pandas.DataFrame = None
         if os.path.exists(os.path.realpath(save_file)):
             main_df = pandas.read_excel(save_file)
         else:
@@ -1006,17 +1007,17 @@ class LordsMobileCalculator:
                                                   )))
 
         # Merge the new data into the existing dataframe that olds all my old data
-        main_df = main_df.append(output_df, sort=False)
+        main_df = pandas.concat([main_df, output_df], sort=False)
         while True:
             try:
-                main_df.to_excel(save_file, encoding="utf-8", header=True, index=False, freeze_panes=(1, 0))
+                main_df.to_excel(save_file, header=True, index=False, freeze_panes=(1, 0))
                 break
             except PermissionError:
                 if not tkinter.messagebox.askretrycancel("Error writing to Excel file", str(
                         save_file) + " is already open. Close the file then retry."):
                     return
 
-        # Autosize the columns of the output file
+        # Automatically size the columns of the output file
         excel = Dispatch('Excel.Application')
         wb = excel.Workbooks.Open(save_file)
         excel.Worksheets(1).Activate()
